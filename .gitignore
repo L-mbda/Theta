@@ -35,6 +35,6 @@ yarn-error.log*
 *.tsbuildinfo
 next-env.d.ts
 
+# Miscellaneous files, .env and migrations
 .env
-
-./migrations
+migrations
