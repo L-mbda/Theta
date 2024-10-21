@@ -1,5 +1,7 @@
 import type { Metadata } from "next";
 import "./globals.css";
+import '@mantine/core/styles.css';
+import { MantineProvider } from "@mantine/core";
 
 export const metadata: Metadata = {
   title: "Theta",
@@ -14,7 +16,9 @@ export default function RootLayout({
   return (
     <html lang="en">
       <body>
-        {children}
+        <MantineProvider>
+          {children}
+        </MantineProvider>
       </body>
     </html>
   );
