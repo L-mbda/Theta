@@ -1,8 +1,11 @@
-// Relative imports for the theta application layer
+/* 
+    Relative imports for the Theta Application,
+    including the database, mantine imports for UI, and server actions
+*/
 import {db} from '@/db/db'
 import { user } from "@/db/schema";
 import { Button, PasswordInput, TextInput } from '@mantine/core';
-import { createAccount } from '@/platform/account/createAccount';
+import { createAccount } from '@/platform/Account';
 import { eq } from "drizzle-orm";
 
 export default async function thetaSystem() {
@@ -15,7 +18,7 @@ export default async function thetaSystem() {
                     <h1 className='font-bold text-[40px]'>Build your Theta</h1>
                     <p className=''>Welcome to Theta! It is nice to have you here as you go on your journey with the status manager. However, first, we need to setup the panel and dashboard for you. Please create your account.</p>
                     <br />
-                    <form className='flex gap-3 flex-col' action={createAccount}>
+                    <form className='flex gap-3 flex-col' onSubmit={createAccount}>
                         <TextInput placeholder='Gon Freecss' label={"Name:"} required/>
                         <TextInput placeholder='gfreecss' label={"Username:"} required/>
                         <PasswordInput placeholder='🞄🞄🞄🞄🞄🞄🞄🞄🞄🞄' label={"Password"} required/>
