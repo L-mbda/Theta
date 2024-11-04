@@ -5,7 +5,7 @@
 import {db} from '@/db/db'
 import { user } from "@/db/schema";
 import { Button, PasswordInput, TextInput } from '@mantine/core';
-import { createOwnerAccount, signIn } from '@/platform/Account';
+import { createOwnerAccount, loginToAccount } from '@/platform/Account';
 import { SSOProvider } from '@/platform/components/SSO';
 
 export default async function thetaSystem() {
@@ -45,7 +45,7 @@ export default async function thetaSystem() {
                     ml-10 p-3 flex flex-col gap-5 pl-4'>
                         <h1 className='font-semibold text-[50px] w-[75%]'>Welcome to <span className='font-bold'>Theta</span>.</h1>
                         {/* Login form with username and password input */}
-                        <form className='flex flex-col mt-5 gap-5' action={signIn}>
+                        <form className='flex flex-col mt-5 gap-5' action={loginToAccount}>
                             <TextInput placeholder='inetero' name='username' label={"Username:"} required />
                             <PasswordInput placeholder='🞄🞄🞄🞄🞄🞄🞄🞄🞄🞄' name='password' label={"Password"} required/>
                             <Button type='submit'>Sign In</Button>

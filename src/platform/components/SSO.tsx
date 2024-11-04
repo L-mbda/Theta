@@ -1,3 +1,6 @@
+// Use Client
+'use client';
+
 // Theta SSO Provider
 export function SSOProvider({className}: any) {
     return (
