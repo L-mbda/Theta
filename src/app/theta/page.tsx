@@ -5,7 +5,8 @@
 import {db} from '@/db/db'
 import { user } from "@/db/schema";
 import { Button, PasswordInput, TextInput } from '@mantine/core';
-import { createOwnerAccount } from '@/platform/Account';
+import { createOwnerAccount, signIn } from '@/platform/Account';
+import { SSOProvider } from '@/platform/components/SSO';
 
 export default async function thetaSystem() {
     // Initialize database and check if there are any users, if there aren't, then display a signup form.
@@ -30,16 +31,26 @@ export default async function thetaSystem() {
         )
     // else
     } else {
-        let backgroundImage = "https://media1.tenor.com/m/kFo4_ao93MgAAAAC/hunter-x-hunter-nanika.gif"
+        let backgroundImage = "https://media1.tenor.com/m/3TwmcJ-ffa0AAAAC/netero-heart.gif"
         // Return login page
         return (
             <>
                 {/* Creating the main page for the background and then the image */}
-                <main className='w-[100%] h-screen text-white bg-cover flex items-center'
+                <main className='w-[100%] h-screen text-white bg-cover flex md:items-center
+                items-center justify-center lg:justify-normal
+                bg-center bg-no-repeat'
                 style={{backgroundImage: `url("${backgroundImage}")`}}>
-                    <div className='bg-red-950 lg:w-[25vw] rounded-md min-h-[65vh]
-                    ml-10 p-5'>
-                        <h1 className='font-semibold text-[40px] w-[75%]'>Welcome to Theta.</h1>
+                    {/* For our card with the welcome to theta and login */}
+                    <div className='bg-red-950 rounded-md min-h-[55vh]
+                    ml-10 p-3 flex flex-col gap-5 pl-4'>
+                        <h1 className='font-semibold text-[50px] w-[75%]'>Welcome to <span className='font-bold'>Theta</span>.</h1>
+                        {/* Login form with username and password input */}
+                        <form className='flex flex-col mt-5 gap-5' action={signIn}>
+                            <TextInput placeholder='inetero' name='username' label={"Username:"} required />
+                            <PasswordInput placeholder='🞄🞄🞄🞄🞄🞄🞄🞄🞄🞄' name='password' label={"Password"} required/>
+                            <Button type='submit'>Sign In</Button>
+                        </form>
+                        {/* <SSOProvider className="mt-3" /> */}
                     </div>
                 </main>
             </>
