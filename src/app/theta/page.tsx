@@ -6,9 +6,10 @@ import {db} from '@/db/db'
 import { user } from "@/db/schema";
 import { Button, PasswordInput, TextInput } from '@mantine/core';
 import { createOwnerAccount, loginToAccount } from '@/platform/Account';
-import { SSOProvider } from '@/platform/components/SSO';
+import { cookies } from 'next/headers';
+import { redirect } from 'next/navigation';
 
-export default async function thetaSystem() {
+export default async function thetaSystem(request: any) {
     // Initialize database and check if there are any users, if there aren't, then display a signup form.
     let check = (await (await db).select().from(user));
     if (check.length == 0) {
@@ -31,12 +32,23 @@ export default async function thetaSystem() {
         )
     // else
     } else {
-        let backgroundImage = "https://media1.tenor.com/m/3TwmcJ-ffa0AAAAC/netero-heart.gif"
+        // Check if cookie exists, if it does, then redirect
+        if (await cookies().get('token') !== undefined) {
+            return redirect('/dashboard')
+        }
+        // backgroundImage
+        let backgroundImage = "https://media1.tenor.com/m/3TwmcJ-ffa0AAAAC/netero-heart.gif";
         // Return login page
+        // Render error
+        let error;
+        if (request != undefined) {
+            error = request.searchParams.message;
+        }
+        // Return page
         return (
             <>
                 {/* Creating the main page for the background and then the image */}
-                <main className='w-[100%] h-screen text-white bg-cover flex md:items-center
+                <main className='w-full h-screen text-white bg-cover flex md:items-center
                 items-center justify-center lg:justify-normal
                 bg-center bg-no-repeat'
                 style={{backgroundImage: `url("${backgroundImage}")`}}>
@@ -46,6 +58,7 @@ export default async function thetaSystem() {
                         <h1 className='font-semibold text-[50px] w-[75%]'>Welcome to <span className='font-bold'>Theta</span>.</h1>
                         {/* Login form with username and password input */}
                         <form className='flex flex-col mt-5 gap-5' action={loginToAccount}>
+                            <p className={error != undefined ? 'block' : 'hidden'}>{error}</p>
                             <TextInput placeholder='inetero' name='username' label={"Username:"} required />
                             <PasswordInput placeholder='🞄🞄🞄🞄🞄🞄🞄🞄🞄🞄' name='password' label={"Password"} required/>
                             <Button type='submit'>Sign In</Button>

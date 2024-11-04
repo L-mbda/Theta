@@ -7,6 +7,9 @@ import { user } from "@/db/schema";
 import { redirect } from 'next/navigation';
 import * as crypto from 'crypto';
 import { eq } from 'drizzle-orm';
+import * as jwt from 'jose';
+import { NextApiResponse } from 'next';
+import { cookies } from 'next/headers';
 
 /*
     Our create owner account function allows us to create an account
@@ -67,8 +70,19 @@ export async function loginToAccount(data: FormData) {
         let saltedPassword = await crypto.createHash("sha3-512").update(check[0].salt1 + password + check[0].salt2).digest("hex");
         // Get first instance and check if the password is equal
         if (check[0].password == saltedPassword) {
-            console.log("EQUAL!")
+            // Assign JWT
+            // @ts-ignore
+            let token = await new jwt.SignJWT().setProtectedHeader({alg: 'HS256'}).setExpirationTime("1d").sign(crypto.createSecretKey(process.env?.JWT_SECRET, "utf-8"));
+            // Create cookie for the JWT called token AND SET samesite to strict
+            await cookies().set("token", token, {'sameSite': 'strict'});
+            // Return redirect
+            return redirect('/dashboard')
+        } else {
+            // Return error
+            return redirect('?message=Incorrect username or password.')
         }
+    } else {
+        // Return error code with incorrect username or password
+        return redirect('?message=Incorrect username or password.')
     }
-    console.log(formResponse);
 }
