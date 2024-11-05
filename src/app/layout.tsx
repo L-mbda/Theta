@@ -8,6 +8,7 @@ export const metadata: Metadata = {
   description: "An instance of the Theta status monitoring platform",
 };
 
+
 export default function RootLayout({
   children,
 }: Readonly<{
@@ -15,7 +16,7 @@ export default function RootLayout({
 }>) {
   return (
     <html lang="en">
-      <body>
+      <body className="bg-black text-white">
         <MantineProvider>
           {children}
         </MantineProvider>

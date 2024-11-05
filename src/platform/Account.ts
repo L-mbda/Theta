@@ -71,8 +71,10 @@ export async function loginToAccount(data: FormData) {
         // Get first instance and check if the password is equal
         if (check[0].password == saltedPassword) {
             // Assign JWT
+            // Setting audience to theta and the userID
+            let token = await new jwt.SignJWT({'id': check[0].id}).setAudience('Theta')
             // @ts-ignore
-            let token = await new jwt.SignJWT().setProtectedHeader({alg: 'HS256'}).setExpirationTime("1d").sign(crypto.createSecretKey(process.env?.JWT_SECRET, "utf-8"));
+            .setProtectedHeader({alg: 'HS256'}).setExpirationTime("1d").sign(crypto.createSecretKey(process.env?.JWT_SECRET, "utf-8"));
             // Create cookie for the JWT called token AND SET samesite to strict
             await cookies().set("token", token, {'sameSite': 'strict'});
             // Return redirect
@@ -84,5 +86,41 @@ export async function loginToAccount(data: FormData) {
     } else {
         // Return error code with incorrect username or password
         return redirect('?message=Incorrect username or password.')
+    }
+}
+
+/*
+    This function handles the dirty work with session authentication and verification of the token for session credentials.
+*/
+export async function Authenticate() {
+    // Get cookies and token
+    let token = await cookies().get('token');
+    // Check if undefined
+    if (token !== undefined) {
+        try {
+            // Verification of the token utilizing the secret key and stuff
+            // @ts-ignore
+            let cooken = await jwt.jwtVerify(token.value,crypto.createSecretKey(process.env?.JWT_SECRET));
+            // Get user account
+            // @ts-ignore
+            let userAccount = await (await db).select({
+                'username': user.username,
+                'role': user.role,
+                'name': user.name,
+            // @ts-ignore
+            }).from(user).where(eq(user.id, cooken.payload?.id))
+            if (userAccount.length == 0) {
+                await cookies().delete('token');
+                return redirect('/theta')    
+            } else {
+                return userAccount[0];
+            }
+        // Erase cookie if invalid and go to theta
+        } catch (error) {
+            await cookies().delete('token');
+            return redirect('/theta')
+        }
+    } else {
+        return redirect('/theta');
     }
 }
