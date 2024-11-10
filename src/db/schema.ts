@@ -1,4 +1,4 @@
-import { char, integer, pgTable, varchar } from "drizzle-orm/pg-core";
+import { char, integer, pgTable, uuid, varchar } from "drizzle-orm/pg-core";
 
 /*
     Our user table for the data within the database
@@ -10,5 +10,18 @@ export const user = pgTable("users", {
     password: varchar({length: 256}),
     salt1: varchar({length: 512}),
     salt2: varchar({length: 512}),
-    role: char({enum: ["owner", "admin", "user"]})
+    role: varchar({enum: ["owner", "admin", "user"]})
+})
+
+/*
+    Our table for services
+*/
+export const services = pgTable("service", {
+    // Get ID of service as a UUID
+    id: uuid().defaultRandom().notNull(),
+    name: varchar({length: 255}).notNull(),
+    monitorURL: varchar({length: 256}).notNull(),
+    monitorType: varchar({length: 256}).notNull(),
+    heartbeatInterval: integer().notNull(),
+    maxRetries: integer().notNull(),  
 })

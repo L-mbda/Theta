@@ -1,4 +1,7 @@
-// use server declaration since it is a server action
+/*
+    Server action/core library file for Theta Authentication
+    ©2024 L-mbda. Open source under the MPL-v2 license.
+*/
 'use server'
 
 // Library Imports
@@ -8,7 +11,6 @@ import { redirect } from 'next/navigation';
 import * as crypto from 'crypto';
 import { eq } from 'drizzle-orm';
 import * as jwt from 'jose';
-import { NextApiResponse } from 'next';
 import { cookies } from 'next/headers';
 
 /*
@@ -18,28 +20,27 @@ import { cookies } from 'next/headers';
 */
 export async function createOwnerAccount(formInfo: FormData) {
     // Get all of the form information as a dictionary
-    let formResponse = (Object.fromEntries(await formInfo));
+    const formResponse = (Object.fromEntries(formInfo));
     // Create an array with each of the unique form entries
-    let [fullName, accountUsername, password] = [
+    const [fullName, accountUsername, password] = [
         formResponse.fullName,
         formResponse.username,
         // Create a hash
         await crypto.createHash("sha3-256").update(formResponse.password + "").digest("hex"),
     ]
     // Create the salting variables
-    var salt1 = crypto.randomBytes(256).toString('hex');
-    var salt2 = crypto.randomBytes(256).toString('hex');
+    const salt1 = crypto.randomBytes(256).toString('hex');
+    const salt2 = crypto.randomBytes(256).toString('hex');
     // Create a check to see if there are any users, if not, then make the user and give them owner.
     if ((await (await db).select().from(user)).length == 0) {
         await (await db).insert(user).values({
-            // Need to ignore such errors, occur frequently
-            // @ts-ignore
+            // @ts-expect-error Need to ignore such errors, occur frequently
             name: fullName,
             username: accountUsername,
             salt1: salt1,
             salt2: salt2,
             // Hash the password utilizing SHA512
-            password: await crypto.createHash("sha3-512").update(salt1 + password + salt2).digest("hex"),
+            password: crypto.createHash("sha3-512").update(salt1 + password + salt2).digest("hex"),
             role: "owner"
         })
         // Redirect back to theta to allow for login
@@ -53,27 +54,25 @@ export async function createOwnerAccount(formInfo: FormData) {
 */
 export async function loginToAccount(data: FormData) {
     // get data
-    let formResponse = (Object.fromEntries(await data));
+    const formResponse = (Object.fromEntries(await data));
     // Create array defining all the variables
-    let [username, password] = [formResponse.username,
+    const [username, password] = [formResponse.username,
         // Ignore the error obtained from the form response password
-        // @ts-ignore
         await crypto.createHash("sha3-256").update(formResponse.password + "").digest("hex"),
     ]
     // Check to see if the user is equal, if not, then do some stuff. Keep ignoring
-    // for some linting reason
-    // @ts-ignore
-    let check = (await (await db).select().from(user).where(eq(user.username, username)));
+    // @ts-expect-error for some linting reason
+    const check = (await (await db).select().from(user).where(eq(user.username, username)));
     // If the check is not equal to 0, move on and continue
     if (check.length != 0) {
         // Salt the password so it'll be more secure.
-        let saltedPassword = await crypto.createHash("sha3-512").update(check[0].salt1 + password + check[0].salt2).digest("hex");
+        const saltedPassword = await crypto.createHash("sha3-512").update(check[0].salt1 + password + check[0].salt2).digest("hex");
         // Get first instance and check if the password is equal
         if (check[0].password == saltedPassword) {
             // Assign JWT
             // Setting audience to theta and the userID
-            let token = await new jwt.SignJWT({'id': check[0].id}).setAudience('Theta')
-            // @ts-ignore
+            const token = await new jwt.SignJWT({'id': check[0].id}).setAudience('Theta')
+            // @ts-expect-error Since it is Credential logic, ignore.
             .setProtectedHeader({alg: 'HS256'}).setExpirationTime("1d").sign(crypto.createSecretKey(process.env?.JWT_SECRET, "utf-8"));
             // Create cookie for the JWT called token AND SET samesite to strict
             await cookies().set("token", token, {'sameSite': 'strict'});
@@ -94,30 +93,29 @@ export async function loginToAccount(data: FormData) {
 */
 export async function Authenticate() {
     // Get cookies and token
-    let token = await cookies().get('token');
+    const token = await cookies().get('token');
     // Check if undefined
     if (token !== undefined) {
         try {
             // Verification of the token utilizing the secret key and stuff
-            // @ts-ignore
-            let cooken = await jwt.jwtVerify(token.value,crypto.createSecretKey(process.env?.JWT_SECRET));
+            // @ts-expect-error Error is expected since we have crypto.createSecretKey
+            const cooken = await jwt.jwtVerify(token.value,crypto.createSecretKey(process.env?.JWT_SECRET));
             // Get user account
-            // @ts-ignore
-            let userAccount = await (await db).select({
+            const userAccount = await (await db).select({
                 'username': user.username,
                 'role': user.role,
                 'name': user.name,
-            // @ts-ignore
+            // @ts-expect-error since it is a file that needs it because of the eq() operator.
             }).from(user).where(eq(user.id, cooken.payload?.id))
             if (userAccount.length == 0) {
-                await cookies().delete('token');
+                cookies().delete('token');
                 return redirect('/theta')    
             } else {
                 return userAccount[0];
             }
         // Erase cookie if invalid and go to theta
         } catch (error) {
-            await cookies().delete('token');
+            cookies().delete('token');
             return redirect('/theta')
         }
     } else {

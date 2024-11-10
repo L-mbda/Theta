@@ -11,7 +11,7 @@ import { redirect } from 'next/navigation';
 
 export default async function thetaSystem(request: any) {
     // Initialize database and check if there are any users, if there aren't, then display a signup form.
-    let check = (await (await db).select().from(user));
+    const check = (await (await db).select().from(user));
     if (check.length == 0) {
         return (
             <main className='bg-blue-800 text-white w-[100%] h-[100vh] p-4 justify-center items-center flex'>
@@ -37,7 +37,7 @@ export default async function thetaSystem(request: any) {
             return redirect('/dashboard')
         }
         // backgroundImage
-        let backgroundImage = "https://media1.tenor.com/m/3TwmcJ-ffa0AAAAC/netero-heart.gif";
+        const backgroundImage = "https://media1.tenor.com/m/3TwmcJ-ffa0AAAAC/netero-heart.gif";
         // Return login page
         // Render error
         let error;
