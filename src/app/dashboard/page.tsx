@@ -75,68 +75,67 @@ export default function DashboardPage() {
         if (user == undefined) {
             deleteCookie('token');
             // Redirect
-            router.push('/theta')
+            return router.push('/theta')
         } else {
-                    // Actual thing we are rendering
-        return (
-            <main>
-                {/* Navbar */}
-                <nav className="bg-inherit border-b-gray-700 border-b-[1px] p-5 shadow-lg flex flex-row">
-                    <h1 className="font-black text-[30px]">Theta</h1>
-                </nav>
-                {/* Body for our content */}
-                <div className="flex flex-col p-10 gap-3">
-                    {/* For our welcome header */}
-                    <div>
-                        {/* @ts-ignore */}
-                        <h1 className="text-4xl font-black">Welcome back, {user.name}!</h1>
-                        <p>What would you like to do today?</p>
-                    </div>
-                    {/* For our actions */}
-                    <div className="flex flex-col gap-3">
-                        <h2 className="text-[20px] font-bold">Your Services:</h2>
-                        {
-                            // Display a button to create a service if a user role is
-                            // admin or owner.
-                            // @ts-ignore
-                            (user.role == 'owner' || user.role == "admin") ? 
-                            (
-                                <Button className="max-w-[20%]">
-                                    {/* For controlling spacing and centering of 
-                                        the icon and text
-                                    */}
-                                    <span className="gap-1 flex justify-center items-center">
-                                        <PlusSquareIcon /> Create Service
-                                    </span>
-                                </Button>
-                            ) : (null)
-                        }
-                        {/* Create question if service exists */}
-                        <div className="grid pt-2">
+            // Actual thing we are rendering
+            return (
+                <main>
+                    {/* Navbar */}
+                    <nav className="bg-inherit border-b-gray-700 border-b-[1px] p-5 shadow-lg flex flex-row">
+                        <h1 className="font-black text-[30px]">Theta</h1>
+                    </nav>
+                    {/* Body for our content */}
+                    <div className="flex flex-col p-10 gap-3">
+                        {/* For our welcome header */}
+                        <div>
+                            {/* @ts-ignore */}
+                            <h1 className="text-4xl font-black">Welcome back, {user.name}!</h1>
+                            <p>What would you like to do today?</p>
+                        </div>
+                        {/* For our actions */}
+                        <div className="flex flex-col gap-3">
+                            <h2 className="text-[20px] font-bold">Your Services:</h2>
                             {
-                                // Ternary operation for rendering
+                                // Display a button to create a service if a user role is
+                                // admin or owner.
                                 // @ts-ignore
-                                serviceState == null ? (
-                                    // Rendering for if null
-                                    <div className="min-h-[50px] w-[30%] bg-gray-800 rounded-md flex flex-col p-5 items-center justify-center gap-4">
-                                        <h1 className="font-semibold flex gap-2 justify-center items-center"><CircleAlert /> No services available.</h1>
-                                        <p>No services have been created to be able to obtain the monitoring status of. Otherwise, they would be displayed here. Why not create a service?</p>
-                                    </div>
-                                ) : (
-                                    <></>
-                                )
+                                (user.role == 'owner' || user.role == "admin") ? 
+                                (
+                                    <Button className="max-w-[20%]">
+                                        {/* For controlling spacing and centering of 
+                                            the icon and text
+                                        */}
+                                        <span className="gap-1 flex justify-center items-center">
+                                            <PlusSquareIcon /> Create Service
+                                        </span>
+                                    </Button>
+                                ) : (null)
                             }
+                            {/* Create question if service exists */}
+                            <div className="grid pt-2">
+                                {
+                                    // Ternary operation for rendering
+                                    // @ts-ignore
+                                    serviceState == null ? (
+                                        // Rendering for if null
+                                        <div className="min-h-[50px] lg:w-[30%] w-[75%] bg-gray-800 rounded-md flex flex-col p-5 items-center justify-center gap-4">
+                                            <h1 className="font-semibold flex gap-2 justify-center items-center"><CircleAlert /> No services available.</h1>
+                                            <p>No services have been created to be able to obtain the monitoring status of. Otherwise, they would be displayed here. Why not create a service?</p>
+                                        </div>
+                                    ) : (
+                                        <></>
+                                    )
+                                }
+                            </div>
                         </div>
                     </div>
-                </div>
-                {/* Footer */}
-                <footer className="flex bottom-3 absolute gap-4 items-center w-full justify-center">
-                    <p>Theta v1 Enterprise</p>
-                    <p>©{new Date().getFullYear()} L-mbda. Licensed under the MPL-v2 license.</p>
-                </footer>
-            </main>
-        )    
-
+                    {/* Footer */}
+                    <footer className="flex bottom-3 absolute gap-4 items-center w-full justify-center">
+                        <p>Theta v1 Enterprise</p>
+                        <p>©{new Date().getFullYear()} L-mbda. Licensed under the MPL-v2 license.</p>
+                    </footer>
+                </main>
+            )
         }
     }
 }
