@@ -1,7 +1,7 @@
 import { Button } from '@mantine/core';
 // Imports
 import {db} from '@/db/db'
-import { user } from "@/db/schema";
+import { manager, user } from "@/db/schema";
 import { redirect } from "next/navigation";
 
 export default async function Home() {
@@ -9,6 +9,11 @@ export default async function Home() {
   const check = (await (await db).select().from(user));
   if (check.length == 0) {
     return redirect("/theta");
+  }
+
+  // Check if login only is true according to the manager
+  if ((await (await db).select().from(manager)).length != 0 && (await (await db).select().from(manager))[0].loginOnly) {
+    return redirect('/theta')
   }
 
   return (

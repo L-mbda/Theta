@@ -6,7 +6,7 @@
 
 // Library Imports
 import {db} from '@/db/db'
-import { user } from "@/db/schema";
+import { manager, user } from "@/db/schema";
 import { redirect } from 'next/navigation';
 import * as crypto from 'crypto';
 import { eq } from 'drizzle-orm';
@@ -43,6 +43,13 @@ export async function createOwnerAccount(formInfo: FormData) {
             password: crypto.createHash("sha3-512").update(salt1 + password + salt2).digest("hex"),
             role: "owner"
         })
+        // Check if manager is having nothing and add if nothing
+        if ((await (await db).select().from(manager)).length == 0) {
+            await (await db).insert(manager).values({
+                name: fullName + "'s status page",
+                loginOnly: true
+            })    
+        }
         // Redirect back to theta to allow for login
         return redirect('/theta')
     }
@@ -109,7 +116,7 @@ export async function Authenticate() {
             }).from(user).where(eq(user.id, cooken.payload?.id))
             if (userAccount.length == 0) {
                 cookies().delete('token');
-                return redirect('/theta')    
+                return redirect('/theta')
             } else {
                 return userAccount[0];
             }

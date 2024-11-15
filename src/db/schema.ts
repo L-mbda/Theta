@@ -1,4 +1,4 @@
-import { char, integer, pgTable, uuid, varchar } from "drizzle-orm/pg-core";
+import { boolean, char, integer, pgTable, uuid, varchar } from "drizzle-orm/pg-core";
 
 /*
     Our user table for the data within the database
@@ -24,4 +24,15 @@ export const services = pgTable("service", {
     monitorType: varchar({length: 256}).notNull(),
     heartbeatInterval: integer().notNull(),
     maxRetries: integer().notNull(),  
+    managerID: uuid(),
+})
+
+/*
+    Our table for manager
+*/
+export const manager = pgTable("manager", {
+    // Get ID of service as a UUID
+    id: uuid().defaultRandom().notNull(),
+    name: varchar({length: 255}).notNull(),
+    loginOnly: boolean().notNull(),
 })

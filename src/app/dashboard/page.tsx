@@ -2,12 +2,16 @@
 import { Authenticate } from "@/platform/Account"
 import {getServices} from "@/platform/Services"
 import { useEffect, useState } from "react"
+import {deleteCookie} from "cookies-next";
 // Icons imports
 import { CircleAlert, PlusSquareIcon } from "lucide-react";
 import { Button } from "@mantine/core";
+import { redirect, useRouter } from "next/navigation";
 
 // Authentication framework
 export default function DashboardPage() {
+    // Create router object
+    let router = useRouter();
     // Create state for user
     const [user, setUser] = useState(null);
     // Set states for multiple different application aspects
@@ -24,6 +28,7 @@ export default function DashboardPage() {
             // Store credentials in setUser state
             // @ts-ignore
             setUser(credentials);
+
         });
         // Get services using function
         // Set the loading status to false
@@ -66,7 +71,13 @@ export default function DashboardPage() {
         )                
     } else {
 
-        // Actual thing we are rendering
+        // If undefined, delete cookie and redirect
+        if (user == undefined) {
+            deleteCookie('token');
+            // Redirect
+            router.push('/theta')
+        } else {
+                    // Actual thing we are rendering
         return (
             <main>
                 {/* Navbar */}
@@ -125,5 +136,7 @@ export default function DashboardPage() {
                 </footer>
             </main>
         )    
+
+        }
     }
 }
