@@ -4,9 +4,8 @@ import {getServices} from "@/platform/Services"
 import { useEffect, useState } from "react"
 import {deleteCookie} from "cookies-next";
 // Icons imports
-import { CircleAlert, PlusSquareIcon } from "lucide-react";
 import { Button } from "@mantine/core";
-import { redirect, useRouter } from "next/navigation";
+import { useRouter } from "next/navigation";
 import Link from "next/link";
 
 // Authentication framework
@@ -92,11 +91,11 @@ export default function DashboardPage() {
                                 // Our rejection, say denied and have button to home
                                 <div className="flex flex-col justify-center items-center min-h-[80vh]">
                                     {/* Greet user and say that you may be at the wrong page */}
-                                    <div className="gap-5 flex flex-col">
+                                    <div className="gap-5 flex flex-col lg:w-[50%]">
                                         <div>
                                             {/* @ts-ignore */}
                                             <h1 className="font-extrabold text-[40px]">Hello, {user.name}!</h1>
-                                            <p className="text-[20px]">Apologies, but are you at the right page?  If you aren&#39;t, <br />use the button below to take you back to the dashboard.</p>
+                                            <p className="text-[20px] lg:w-[70%]">Apologies, but are you at the right page?  If you aren&#39;t, use the button below to take you back to the dashboard.</p>
                                         </div>
                                         {/* Button to take back home */}
                                         <Button color="dark" component={Link} href={'/dashboard'}><span className="text-[15px] font-bold">Take me back!</span></Button>
