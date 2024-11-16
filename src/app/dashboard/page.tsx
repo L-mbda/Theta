@@ -64,7 +64,7 @@ export default function DashboardPage() {
                     </div>
                 </div>
                 {/* Footer */}
-                <footer className="animate-pulse flex bottom-3 absolute gap-4 items-center w-full justify-center">
+                <footer className="animate-pulse flex bottom-3 absolute gap-4 items-center w-full invisible md:visible justify-center">
                     <p>Theta v1 Enterprise</p>
                     <p>©{new Date().getFullYear()} L-mbda. Licensed under the MPL-v2 license.</p>
                 </footer>
@@ -131,7 +131,7 @@ export default function DashboardPage() {
                         </div>
                     </div>
                     {/* Footer */}
-                    <footer className="flex bottom-3 absolute gap-4 items-center w-full justify-center">
+                    <footer className="flex bottom-3 absolute gap-4 items-center w-full invisible md:visible justify-center">
                         <p>Theta v1 Enterprise</p>
                         <p>©{new Date().getFullYear()} L-mbda. Licensed under the MPL-v2 license.</p>
                     </footer>
