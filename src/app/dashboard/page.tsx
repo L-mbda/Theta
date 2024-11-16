@@ -7,6 +7,7 @@ import {deleteCookie} from "cookies-next";
 import { CircleAlert, PlusSquareIcon } from "lucide-react";
 import { Button } from "@mantine/core";
 import { redirect, useRouter } from "next/navigation";
+import Link from "next/link";
 
 // Authentication framework
 export default function DashboardPage() {
@@ -101,7 +102,7 @@ export default function DashboardPage() {
                                 // @ts-ignore
                                 (user.role == 'owner' || user.role == "admin") ? 
                                 (
-                                    <Button className="max-w-[20%]">
+                                    <Button className="max-w-[20%]" component={Link} href={'/create/service'}>
                                         {/* For controlling spacing and centering of 
                                             the icon and text
                                         */}
