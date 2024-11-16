@@ -20,7 +20,7 @@
     "cron": "^3.2.1",
     "dayjs": "^1.11.13",
     "dotenv": "^16.4.5",
-    "drizzle-orm": "^0.36.2",
+    "drizzle-orm": "^0.36.3",
     "jose": "^5.9.6",
     "lucide-react": "^0.456.0",
     "mysql2": "^3.11.4",
@@ -41,7 +41,7 @@
     "postcss": "^8.4.49",
     "postcss-preset-mantine": "^1.17.0",
     "postcss-simple-vars": "^7.0.1",
-    "tailwindcss": "^3.4.14",
+    "tailwindcss": "^3.4.15",
     "typescript": "^5.6.3"
   }
 }

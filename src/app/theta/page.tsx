@@ -42,7 +42,7 @@ export default async function thetaSystem(request: any) {
         // Render error
         let error;
         if (request != undefined) {
-            error = request.searchParams.message;
+            error = await (await request.searchParams).message;
         }
         // Return page
         return (
