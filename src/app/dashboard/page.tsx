@@ -12,7 +12,7 @@ import Link from "next/link";
 // Authentication framework
 export default function DashboardPage() {
     // Create router object
-    let router = useRouter();
+    const router = useRouter();
     // Create state for user
     const [user, setUser] = useState(null);
     // Set states for multiple different application aspects
@@ -35,7 +35,7 @@ export default function DashboardPage() {
         // Set the loading status to false
         async function loadRest() { 
             // Declare variable for calling getServices.
-            let services = await getServices()
+            const services = await getServices()
             // Ignore error
             // @ts-ignore
             setServiceState(services?.servers);
