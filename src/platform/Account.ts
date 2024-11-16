@@ -82,7 +82,7 @@ export async function loginToAccount(data: FormData) {
             // @ts-expect-error Since it is Credential logic, ignore.
             .setProtectedHeader({alg: 'HS256'}).setExpirationTime("1d").sign(crypto.createSecretKey(process.env?.JWT_SECRET, "utf-8"));
             // Create cookie for the JWT called token AND SET samesite to strict
-            await cookies().set("token", token, {'sameSite': 'strict'});
+            await (await cookies()).set("token", token, {'sameSite': 'strict'});
             // Return redirect
             return redirect('/dashboard')
         } else {
@@ -100,7 +100,7 @@ export async function loginToAccount(data: FormData) {
 */
 export async function Authenticate() {
     // Get cookies and token
-    const token = await cookies().get('token');
+    const token = await (await cookies()).get('token');
     // Check if undefined
     if (token !== undefined) {
         try {
@@ -115,14 +115,14 @@ export async function Authenticate() {
             // @ts-expect-error since it is a file that needs it because of the eq() operator.
             }).from(user).where(eq(user.id, cooken.payload?.id))
             if (userAccount.length == 0) {
-                cookies().delete('token');
+                await (await cookies()).delete('token');
                 return redirect('/theta')
             } else {
                 return userAccount[0];
             }
         // Erase cookie if invalid and go to theta
         } catch (error) {
-            cookies().delete('token');
+            await (await cookies()).delete('token');
             return redirect('/theta')
         }
     } else {

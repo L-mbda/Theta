@@ -33,7 +33,7 @@ export default async function thetaSystem(request: any) {
     // else
     } else {
         // Check if cookie exists, if it does, then redirect
-        if (await cookies().get('token') !== undefined) {
+        if (await (await cookies()).get('token') !== undefined) {
             return redirect('/dashboard')
         }
         // backgroundImage
