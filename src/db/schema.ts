@@ -28,6 +28,17 @@ export const services = pgTable("service", {
 })
 
 /*
+    Table for "integrations," which are just connections to stuff like webhooks
+*/
+export const integrations = pgTable("integrations", {
+    id: uuid().defaultRandom().notNull(),
+    serviceID: uuid().notNull(),
+    integrationName: varchar({length: 256}).notNull(),
+    integrationType: varchar({length: 256}).notNull(),
+    integrationURL: varchar({length: 256}).notNull(),
+})
+
+/*
     Our table for manager
 */
 export const manager = pgTable("manager", {

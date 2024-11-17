@@ -4,9 +4,10 @@ import {getServices} from "@/platform/Services"
 import { useEffect, useState } from "react"
 import {deleteCookie} from "cookies-next";
 // Icons imports
-import { Button } from "@mantine/core";
-import { useRouter } from "next/navigation";
+import { Button, NumberInput, SegmentedControl, Text, TextInput } from "@mantine/core";
+import { redirect, useRouter } from "next/navigation";
 import Link from "next/link";
+import { GalleryHorizontal, GalleryHorizontalEnd } from "lucide-react";
 
 // Authentication framework
 export default function DashboardPage() {
@@ -14,6 +15,8 @@ export default function DashboardPage() {
     const router = useRouter();
     // Create state for user
     const [user, setUser] = useState(null);
+    // Create states
+    const [monitorType, setMonitorType] = useState("http");
     // Set states for multiple different application aspects
     // Create services state
     const [serviceState, setServiceState] = useState(null);
@@ -68,12 +71,11 @@ export default function DashboardPage() {
             </main>
         )                
     } else {
-
         // If undefined, delete cookie and redirect
         if (user == undefined) {
             deleteCookie('token');
             // Redirect
-            return router.push('/theta')
+            return redirect('/theta')
         } else {
             // Actual thing we are rendering
             return (
@@ -87,7 +89,75 @@ export default function DashboardPage() {
                         {/* Check if allowed to create a service, if not, then deny */}
                         {
                             // @ts-ignore
-                            user.role == "user" ? (<></>) : (
+                            user.role != "user" ? (<>
+                                {/* Render the process for creating a service */}
+                                <div className="flex flex-col items-center min-h-[30vh] p-10 gap-5">
+                                    <h1 className="font-bold text-[30px]">Create a Service</h1>
+                                    {/* Add further text */}
+                                    <div className="flex flex-row  min-w-[100%]">
+                                        {/* Form */}
+                                        <form onSubmit={() => {console.log("ER")}}>
+                                            {/* Form A: Basics */}
+                                            <div className="flex flex-col gap-4">
+                                                <h1 className="font-semibold text-[20px]">Basic Information</h1>
+                                                {/* Monitor name */}
+                                                <TextInput name="service_name" placeholder="My Beautiful Service" size="md" label={'Service Name:'} radius={"xl"} description="Necessary for services to have a name."  required/>
+                                                {/* Monitor type */}
+                                                <div className="flex flex-col gap-2">
+                                                    <Text>Monitor Type:</Text>
+                                                    <SegmentedControl
+                                                    name="monitor_type"
+                                                    defaultValue="http"
+                                                    color="blue"
+                                                    // If monitor type changes, set that to event.target?.value
+                                                    onClick={(event) => {
+                                                        // @ts-ignore
+                                                        setMonitorType(event.target?.value)
+                                                    }}
+                                                    data={[
+                                                        // For HTTP Monitor
+                                                        {'value': "http", 'disabled': false, 'label': (
+                                                            <span className="flex flex-row justify-center items-center gap-1">
+                                                                <GalleryHorizontal />
+                                                                HTTP
+                                                            </span>
+                                                        )},
+                                                        // Ping Monitor
+                                                        {'value': "ping", 'disabled': false, 'label': (
+                                                            <span className="flex flex-row justify-center items-center gap-1">
+                                                                <GalleryHorizontalEnd />
+                                                                Ping
+                                                            </span>
+                                                        )}
+                                                    ]}
+                                                    size="md" radius={"xl"}/>
+                                                </div>
+                                                {/* Logic for showing specific monitor type */}
+                                                {
+                                                    monitorType == 'http' ? (
+                                                        <TextInput name="monitor_url" placeholder="theta.example.org" size="md" label={'Monitor URL'} radius={"xl"} description="The URL to utilize to check the heartbeat of."  required/>
+                                                    ):(
+                                                        <TextInput name="monitor_url" placeholder="192.168.9.2" size="md" label={'Hostname'} radius={"xl"} description="IP address or hostname to ping."  required/>
+                                                    )
+                                                }
+                                                {/* Max retries, hearbeat, etc/ */}                                                                                                {/* Max retries, hearbeat, etc/ */}
+                                                <NumberInput name="heartbeat_interval" id="heartbeat_interval" placeholder="6" size="md" label={'Heartbeat Interval'} radius={"xl"} min={1} description={(
+                                                    <p id="heartbeat_interval_text">
+                                                        The service will be checked every second.
+                                                    </p>
+                                                )} onChange={(value) => {
+                                                    // Changes the value of the interval description based on the value changed
+                                                    // @ts-ignore
+                                                    document.getElementById('heartbeat_interval_text').innerHTML = (value != 1) ? `The service will be checked every ${value} seconds.` : "The service will be checked every second."
+                                                }} defaultValue={0}  required/>
+                                                <NumberInput name="retries" placeholder="6" size="md" label={'Maximum Retries'} radius={"xl"} min={0} description="The maximum amount of retries allowed before raising an notice and marking the service as down." defaultValue={0}  required/>
+                                                <Button type="submit" radius={'xl'}>Create Service</Button>
+                                            </div>
+                                            {/* Form B */}
+                                        </form>
+                                    </div>
+                                </div>
+                            </>) : (
                                 // Our rejection, say denied and have button to home
                                 <div className="flex flex-col justify-center items-center min-h-[80vh]">
                                     {/* Greet user and say that you may be at the wrong page */}

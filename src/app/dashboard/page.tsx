@@ -76,7 +76,7 @@ export default function DashboardPage() {
         if (user == undefined) {
             deleteCookie('token');
             // Redirect
-            return router.push('/theta')
+            return redirect('/theta')
         } else {
             // Actual thing we are rendering
             return (
