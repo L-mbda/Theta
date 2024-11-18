@@ -65,11 +65,37 @@ export default function DashboardPage() {
             return redirect('/theta')
         } else {
             // createService function
-            function createService() {
+            function createService(event: any) {
+                // Prevent reload lmao
+                event.preventDefault();
                 // Sett Button loading state to true
-                setButtonState(true);
-                // Send to API for service
-                fetch("/api/kira")
+                // setButtonState(true);
+                // Get elements from form
+                const [serviceName, monitorType, heartbeatInterval, maximumRetries, monitorURL] = [
+                    event.target['service_name'].value,
+                    event.target['monitor_type'].value,
+                    event.target['heartbeat_interval'].value,
+                    event.target['retries'].value,
+                    event.target['monitor_url'].value,
+                ]
+                // Send to API for service as POST request
+                fetch("/api/kira", {
+                    'method': "POST",
+                    'body': JSON.stringify({
+                        'serviceName': serviceName,
+                        'monitorType': monitorType,
+                        'heartbeatInterval': heartbeatInterval,
+                        'maximumRetries': maximumRetries,
+                        'monitorURL': monitorURL,
+                    })
+                // Insanely complicated logic using then statements instead of await
+                }).then((res) => {res.json().then((data) => {
+                    if (data.status) {
+                        router.push('/dashboard')
+                    } else {
+                        setButtonState(false);
+                    }
+                })})
             }
             // Actual thing we are rendering
             return (
@@ -90,9 +116,9 @@ export default function DashboardPage() {
                                     {/* Add further text */}
                                     <div className="flex flex-row  min-w-[100%]">
                                         {/* Form and attempt to deal with onSubmit */}
-                                        <form>
+                                        <form id="form_create" onSubmitCapture={createService}>
                                             {/* Form A: Basics */}
-                                            <div className="flex flex-col gap-4">
+                                            <div className="flex flex-col gap-4" id="formA">
                                                 <h1 className="font-semibold text-[20px]">Basic Information</h1>
                                                 {/* Monitor name */}
                                                 <TextInput name="service_name" placeholder="My Beautiful Service" size="md" label={'Service Name:'} radius={"xl"} description="Necessary for services to have a name."  required/>
@@ -146,7 +172,7 @@ export default function DashboardPage() {
                                                 }} defaultValue={0}  required/>
                                                 <NumberInput name="retries" placeholder="6" size="md" label={'Maximum Retries'} radius={"xl"} min={0} description="The maximum amount of retries allowed before raising an notice and marking the service as down." defaultValue={0}  required/>
                                                 {
-                                                    buttonState ? <Button radius={'xl'}><Loader color="white" size={'sm'} /></Button> : <Button type="button" onClick={createService} radius={'xl'}>Create Service</Button>
+                                                    buttonState ? <Button radius={'xl'}><Loader color="white" size={'sm'} /></Button> : <Button type="submit" radius={'xl'}>Create Service</Button>
                                                 }
                                             </div>
                                             {/* Form B */}

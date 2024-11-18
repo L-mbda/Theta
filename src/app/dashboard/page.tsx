@@ -4,7 +4,7 @@ import {getServices} from "@/platform/Services"
 import { useEffect, useState } from "react"
 import {deleteCookie} from "cookies-next";
 // Icons imports
-import { CircleAlert, PlusSquareIcon } from "lucide-react";
+import { BadgeCheck, CircleAlert, CircleDashed, HeartPulse, PlusSquareIcon } from "lucide-react";
 import { Button } from "@mantine/core";
 import { redirect, useRouter } from "next/navigation";
 import Link from "next/link";
@@ -124,7 +124,28 @@ export default function DashboardPage() {
                                             <p>No services have been created to be able to obtain the monitoring status of. Otherwise, they would be displayed here. Why not create a service?</p>
                                         </div>
                                     ) : (
-                                        <></>
+                                        // Map the services
+                                        <>
+                                            {
+                                                // Mapping service state using data
+                                                // @ts-ignore
+                                                serviceState.map((data) => {
+                                                    return (
+                                                        // Return div as a card with monitor information
+                                                        <div className="min-h-[200px] lg:w-[30%] w-[75%] bg-gray-800 rounded-md flex flex-col p-5 items-center justify-center gap-4" key={data}>
+                                                            <h1 className="font-bold">{data.name}</h1>
+                                                            {/* Flex */}
+                                                            <div className="flex flex-col">
+                                                                <div className="flex flex-row gap-3">
+                                                                    <p className="flex flex-row justify-center items-center gap-1"><BadgeCheck /> {data.monitorType}</p>
+                                                                    <p className="flex flex-row justify-center items-center gap-1"><HeartPulse /> {data.heartbeatInterval} second(s)</p>
+                                                                </div>
+                                                            </div>
+                                                        </div>
+                                                    )
+                                                })
+                                            }
+                                        </>
                                     )
                                 }
                             </div>

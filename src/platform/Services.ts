@@ -19,5 +19,10 @@ export async function getServices() {
         return {
             'servers': null,
         }
+    // otherwise, return servers
+    } else {
+        return {
+            'servers': serviceCheck
+        }
     }
 }
