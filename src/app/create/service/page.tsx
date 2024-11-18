@@ -4,7 +4,7 @@ import {getServices} from "@/platform/Services"
 import { useEffect, useState } from "react"
 import {deleteCookie} from "cookies-next";
 // Icons imports
-import { Button, NumberInput, SegmentedControl, Text, TextInput } from "@mantine/core";
+import { Button, Loader, NumberInput, SegmentedControl, Text, TextInput } from "@mantine/core";
 import { redirect, useRouter } from "next/navigation";
 import Link from "next/link";
 import { GalleryHorizontal, GalleryHorizontalEnd } from "lucide-react";
@@ -18,8 +18,8 @@ export default function DashboardPage() {
     // Create states
     const [monitorType, setMonitorType] = useState("http");
     // Set states for multiple different application aspects
-    // Create services state
-    const [serviceState, setServiceState] = useState(null);
+    // Create submit state
+    const [buttonState, setButtonState] = useState(false);    
     // Create loading state
     const [loadingStatus, setLoadingStatus] = useState(true);
     // Try to poll the DB hehe 🧌
@@ -31,21 +31,8 @@ export default function DashboardPage() {
             // Store credentials in setUser state
             // @ts-ignore
             setUser(credentials);
-
-        });
-        // Get services using function
-        // Set the loading status to false
-        async function loadRest() { 
-            // Declare variable for calling getServices.
-            const services = await getServices()
-            // Ignore error
-            // @ts-ignore
-            setServiceState(services?.servers);
-            // If flag is set tpo
             setLoadingStatus(false);
-        }
-        // Call manufactured function
-        loadRest();
+        });
     },[])
     // Check and render skeleton
     if (loadingStatus) {
@@ -77,6 +64,13 @@ export default function DashboardPage() {
             // Redirect
             return redirect('/theta')
         } else {
+            // createService function
+            function createService() {
+                // Sett Button loading state to true
+                setButtonState(true);
+                // Send to API for service
+                fetch("/api/kira")
+            }
             // Actual thing we are rendering
             return (
                 <main>
@@ -95,8 +89,8 @@ export default function DashboardPage() {
                                     <h1 className="font-bold text-[30px]">Create a Service</h1>
                                     {/* Add further text */}
                                     <div className="flex flex-row  min-w-[100%]">
-                                        {/* Form */}
-                                        <form onSubmit={() => {console.log("ER")}}>
+                                        {/* Form and attempt to deal with onSubmit */}
+                                        <form>
                                             {/* Form A: Basics */}
                                             <div className="flex flex-col gap-4">
                                                 <h1 className="font-semibold text-[20px]">Basic Information</h1>
@@ -142,16 +136,18 @@ export default function DashboardPage() {
                                                 }
                                                 {/* Max retries, hearbeat, etc/ */}                                                                                                {/* Max retries, hearbeat, etc/ */}
                                                 <NumberInput name="heartbeat_interval" id="heartbeat_interval" placeholder="6" size="md" label={'Heartbeat Interval'} radius={"xl"} min={1} description={(
-                                                    <p id="heartbeat_interval_text">
+                                                    <span id="heartbeat_interval_text">
                                                         The service will be checked every second.
-                                                    </p>
+                                                    </span>
                                                 )} onChange={(value) => {
                                                     // Changes the value of the interval description based on the value changed
                                                     // @ts-ignore
                                                     document.getElementById('heartbeat_interval_text').innerHTML = (value != 1) ? `The service will be checked every ${value} seconds.` : "The service will be checked every second."
                                                 }} defaultValue={0}  required/>
                                                 <NumberInput name="retries" placeholder="6" size="md" label={'Maximum Retries'} radius={"xl"} min={0} description="The maximum amount of retries allowed before raising an notice and marking the service as down." defaultValue={0}  required/>
-                                                <Button type="submit" radius={'xl'}>Create Service</Button>
+                                                {
+                                                    buttonState ? <Button radius={'xl'}><Loader color="white" size={'sm'} /></Button> : <Button type="button" onClick={createService} radius={'xl'}>Create Service</Button>
+                                                }
                                             </div>
                                             {/* Form B */}
                                         </form>
