@@ -13,6 +13,7 @@ import { services } from "@/db/schema";
 export async function getServices() {
     // Check service entries from DB
     const serviceCheck = await (await db).select().from(services);
+    console.log(serviceCheck);
     // Log in and check if length is 0
     if (serviceCheck.length == 0) {
         // Return information

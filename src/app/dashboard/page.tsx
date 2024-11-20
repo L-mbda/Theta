@@ -132,16 +132,17 @@ export default function DashboardPage() {
                                                 serviceState.map((data) => {
                                                     return (
                                                         // Return div as a card with monitor information
-                                                        <div className="min-h-[200px] lg:w-[30%] w-[75%] bg-gray-800 rounded-md flex flex-col p-5 items-center justify-center gap-4" key={data}>
+                                                        <Link href={'/service?id=' + data.id} className="min-h-[200px] lg:w-[30%] w-[75%] bg-gray-800 rounded-md flex flex-col p-5 items-center justify-center gap-4" key={data}>
                                                             <h1 className="font-bold">{data.name}</h1>
                                                             {/* Flex */}
+                                                            {/* Card that redirects you to manage the service */}
                                                             <div className="flex flex-col">
                                                                 <div className="flex flex-row gap-3">
                                                                     <p className="flex flex-row justify-center items-center gap-1"><BadgeCheck /> {data.monitorType}</p>
                                                                     <p className="flex flex-row justify-center items-center gap-1"><HeartPulse /> {data.heartbeatInterval} second(s)</p>
                                                                 </div>
                                                             </div>
-                                                        </div>
+                                                        </Link>
                                                     )
                                                 })
                                             }

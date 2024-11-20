@@ -21,14 +21,14 @@ export async function POST(request: NextRequest) {
         monitorURL: URL of the monitor/hostname
     */
     // Insert information into the database
-    // await db.insert(services).values({
-    //     'name': data.serviceName,
-    //     'managerID': (await db.select().from(manager))[0].id,
-    //     'heartbeatInterval': data.heartbeatInterval,
-    //     'maxRetries': data.maximumRetries,
-    //     'monitorType': data.monitorType,
-    //     'monitorURL': data.monitorURL
-    // })
+    await db.insert(services).values({
+        'name': data.serviceName,
+        'managerID': (await db.select().from(manager))[0].id,
+        'heartbeatInterval': data.heartbeatInterval,
+        'maxRetries': data.maximumRetries,
+        'monitorType': data.monitorType,
+        'monitorURL': data.monitorURL
+    })
     return NextResponse.json({
         'name': 'Service successfully created!',
         'status': true,
