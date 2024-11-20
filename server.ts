@@ -14,9 +14,9 @@ import { createServer } from "http";
 import {parse} from "url"
 import next from 'next'
 import chalk from 'chalk'
-import * as schedule from 'node-schedule';
 import { drizzle } from 'drizzle-orm/node-postgres';
 import { services } from '@/db/schema';
+import * as ToadScheduler from 'toad-scheduler';
 
 // Defining constants
 const port = parseInt(process.env.PORT || '3000', 10);
@@ -24,6 +24,7 @@ const dev = process.env.NODE_ENV !== 'production';
 const app = next({dev})
 const handle = app.getRequestHandler();
 const db = drizzle(process.env.DB_URL!)
+const scheduler = new ToadScheduler.ToadScheduler();
 
 // Function to register task implementation 
 async function registerTasks() {
@@ -31,14 +32,13 @@ async function registerTasks() {
     let databaseInformation = await (await db).select().from(services);
     for (let iteration in databaseInformation) {
         const service = databaseInformation[iteration];
-        console.log(service);
-        // Create a recurrence rule and then schedule job
-        // that way
-        const rule = new schedule.RecurrenceRule();
-        rule.second = service.heartbeatInterval;
-        schedule.scheduleJob(rule, () => {
-            console.log("Schedule now!")
+        // Create a task
+        const task = new ToadScheduler.Task(service.id, () => {
+            console.log("Hello")
         })
+        // Run the job and then have it occur several times
+        const job = new ToadScheduler.SimpleIntervalJob({seconds: 5,},task)
+        scheduler.addSimpleIntervalJob(job)
     }
 }
 
@@ -52,8 +52,21 @@ app.prepare().then(() => {
             dev ? 'development' : process.env.NODE_ENV
         }.`)}`)    
         // Register server cron functions
-        console.log("Registering task implementation...");
-        await registerTasks();
-
+        // await registerTasks();
     })
+})
+
+// Handle graceful exits
+process.on('SIGTERM', async () => {
+    await app.close();
+    scheduler.stop();
+    console.log(chalk.cyanBright("Stopped Theta Server. Have a good day!"))
+    process.exit(0);
+})
+
+process.on('SIGINT', async () => {
+    await app.close();
+    scheduler.stop();
+    console.log(chalk.cyanBright("Stopped Theta Server. Have a good day!"))
+    process.exit(0);
 })
