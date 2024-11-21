@@ -19,7 +19,6 @@ import { services } from '@/db/schema';
 
 // Scheduling and ping utilities
 import * as ToadScheduler from 'toad-scheduler';
-import * as ping from 'ping'
 
 // Defining constants
 const port = parseInt(process.env.PORT || '3000', 10);
@@ -39,11 +38,9 @@ async function registerTasks() {
         // Create a task
         const task = new ToadScheduler.Task(service.id, () => {
             if (service.monitorType == "ping") {
-                ping.sys.probe(service.monitorURL, (isAlive) => {
-                    console.log(isAlive);
-                })
+                
+                console.log("Continuation")
             }
-            console.log("Hello")
         })
         // Run the job and then have it occur several times
         const job = new ToadScheduler.SimpleIntervalJob({seconds: 5,},task)
@@ -61,7 +58,9 @@ app.prepare().then(() => {
             dev ? 'development' : process.env.NODE_ENV
         }.`)}`)    
         // Register server cron functions
+        console.log(chalk.redBright("> Registering Tasks"))    
         await registerTasks();
+        console.log(chalk.redBright("> Finished registering Tasks"))    
     })
 })
 
