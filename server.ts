@@ -16,7 +16,10 @@ import next from 'next'
 import chalk from 'chalk'
 import { drizzle } from 'drizzle-orm/node-postgres';
 import { services } from '@/db/schema';
+
+// Scheduling and ping utilities
 import * as ToadScheduler from 'toad-scheduler';
+import * as ping from 'ping'
 
 // Defining constants
 const port = parseInt(process.env.PORT || '3000', 10);
@@ -32,8 +35,14 @@ async function registerTasks() {
     let databaseInformation = await (await db).select().from(services);
     for (let iteration in databaseInformation) {
         const service = databaseInformation[iteration];
+        console.log(service);
         // Create a task
         const task = new ToadScheduler.Task(service.id, () => {
+            if (service.monitorType == "ping") {
+                ping.sys.probe(service.monitorURL, (isAlive) => {
+                    console.log(isAlive);
+                })
+            }
             console.log("Hello")
         })
         // Run the job and then have it occur several times
@@ -52,7 +61,7 @@ app.prepare().then(() => {
             dev ? 'development' : process.env.NODE_ENV
         }.`)}`)    
         // Register server cron functions
-        // await registerTasks();
+        await registerTasks();
     })
 })
 

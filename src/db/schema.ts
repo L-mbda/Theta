@@ -1,4 +1,4 @@
-import { boolean, char, integer, pgTable, uuid, varchar } from "drizzle-orm/pg-core";
+import { boolean, char, date, integer, pgTable, uuid, varchar } from "drizzle-orm/pg-core";
 
 /*
     Our user table for the data within the database
@@ -25,6 +25,16 @@ export const services = pgTable("service", {
     heartbeatInterval: integer().notNull(),
     maxRetries: integer().notNull(),  
     managerID: uuid(),
+})
+
+/*
+    Table for obtaining the service history
+*/
+export const serviceHistory = pgTable("serviceHistory", {
+    id: uuid().defaultRandom().notNull(),
+    serviceID: uuid().notNull(),
+    reachableStatus: boolean().default(false),
+    date: date().notNull(),
 })
 
 /*
