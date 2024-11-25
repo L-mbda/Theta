@@ -3,12 +3,12 @@ import "./globals.css";
 import '@mantine/core/styles.css';
 import '@mantine/notifications/styles.css';
 import { MantineProvider } from "@mantine/core";
+import { io } from "socket.io-client";
 
 export const metadata: Metadata = {
   title: "Theta",
   description: "An instance of the Theta status monitoring platform",
 };
-
 
 export default function RootLayout({
   children,

@@ -4,10 +4,19 @@ import {getServices} from "@/platform/Services"
 import { useEffect, useState } from "react"
 import {deleteCookie} from "cookies-next";
 // Icons imports
-import { BadgeCheck, CircleAlert, CircleDashed, HeartPulse, PlusSquareIcon } from "lucide-react";
+import { BadgeCheck, CircleAlert, HeartPulse, PlusSquareIcon } from "lucide-react";
 import { Button } from "@mantine/core";
 import { redirect, useRouter } from "next/navigation";
 import Link from "next/link";
+import { io } from "socket.io-client";
+
+// Connect to socketio
+const socket = io("http://localhost:3001");
+
+// Create a socket connection
+socket.on("connect", () => {
+    console.log(socket.id);
+});
 
 // Authentication framework
 export default function DashboardPage() {

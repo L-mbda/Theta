@@ -18,10 +18,7 @@ import { drizzle } from 'drizzle-orm/node-postgres';
 import { serviceHistory, services } from '@/db/schema';
 import { ping } from 'tcp-ping';
 import {Server} from "socket.io";
-
-// Initialize the socket.io server
-const io = new Server();
-io.listen(3001);
+import axios from "axios";
 
 // Scheduling and ping utilities
 import * as ToadScheduler from 'toad-scheduler';
@@ -33,11 +30,6 @@ const app = next({dev})
 const handle = app.getRequestHandler();
 const db = drizzle(process.env.DB_URL!)
 export const scheduler = new ToadScheduler.ToadScheduler();
-
-// Function to handle events with socket.io
-io.on("connection", (socket) => {
-    console.log(socket);
-})
 
 // Function to register task implementation 
 export async function registerTasks() {
@@ -64,7 +56,7 @@ export async function registerTasks() {
                         })
                     }
                     // Log service not responding and stopping service
-                    console.log(chalk.redBright(`> Service ${service.name} is not reachable! Stopped servicing.`))
+                    console.log(chalk.redBright(`❌ Service ${service.name} is not reachable! Stopped servicing.`))
                 }
                 // Stop notifications and pushing to service history by raising serviceError to true.
                 serviceError = true;
@@ -85,30 +77,37 @@ export async function registerTasks() {
                             })
                         }
                         // Log that the server is reachable
-                        console.log(chalk.greenBright(`> Service ${service.name} is reachable!`))
+                        console.log(chalk.greenBright(`✅ Service ${service.name} is reachable!`))
                     }
                 })
             } else if (service.monitorType == "http") {
-                // // Request the server
-                // const fetchInfo = await fetch(service.monitorURL)
-                // if ((await fetchInfo.status) >= 200 && (await fetchInfo.status) <= 299) {
-                //     // Provide notice in service logs
-                //     // @ts-ignore
-                //     await (await db).insert(serviceHistory).values({
-                //         'reachableStatus': true,
-                //         'date': new Date(),
-                //         'serviceID': service.id
-                //     })            
-                //     // Print 
-                //     console.log(chalk.greenBright(`> Service ${service.name} is reachable!`))
-                // // Otherwise, try again and error out
-                // } else {
-                //     serviceErrorCount++;
-                // }
+                // Request the server with axios
+                try {
+                    // Fetch information and check if the URL starts with http or https
+                    const fetchInfo = await axios.get((service.monitorURL.startsWith("http://") || service.monitorURL.startsWith("https://")) ? service.monitorURL : "http://" + service.monitorURL);
+                    // If status is "SUCCESSFUL" as per HTTP terms, insert into the service history of being reachable, otherwise increment errors
+                    if (fetchInfo.status >= 200 && fetchInfo.status < 300) {
+                        async () => {
+                            // @ts-ignore
+                            await (await db).insert(serviceHistory).values({
+                                'reachableStatus': true,
+                                'date': new Date(),
+                                'serviceID': service.id
+                            })
+                        }
+                        // Log server being reachable
+                        console.log(chalk.greenBright(`✅ Service ${service.name} is reachable!`))
+                    } else {
+                        serviceErrorCount++;
+                    }
+                // If there is an axios error (most likely to occur), increment an error.
+                } catch (error) {
+                    serviceErrorCount++;
+                }
             }
         })
         // Run the job and then have it occur several times
-        const job = new ToadScheduler.SimpleIntervalJob({seconds: service.heartbeatInterval,},task)
+        const job = new ToadScheduler.SimpleIntervalJob({seconds: (service.heartbeatInterval > 0) ? service.heartbeatInterval : 1,},task)
         scheduler.addSimpleIntervalJob(job)
     }
 }
@@ -137,11 +136,21 @@ async function checkDatabase() {
 
 // Handling routes
 app.prepare().then(() => {
+    // Clear console
+    console.clear();
+    // Initialize the socket.io server
+    const io = new Server(3001);
+    // Handle socketio connections
+    io.on("connection", (socket) => {
+        console.log(chalk.yellowBright(`🎯 Connected to socket ${socket.id}`));
+    });
+
+    // Create server
     createServer((req,res) => {
         const parsedUrl = parse(req.url!, true)
         handle(req,res,parsedUrl)
     }).listen(port, async () => {
-        console.log(`${chalk.blue("Theta")} ${chalk.magentaBright('CSI')}\n${chalk.cyanBright(`> Running on Port ${port} as ${
+        console.log(`⚡ ${chalk.blue("Theta")} ${chalk.magentaBright('CSI')}\n${chalk.cyanBright(`> Running on Port ${port} as ${
             dev ? 'development' : process.env.NODE_ENV
         }.`)}`)    
         // Register server cron functions
