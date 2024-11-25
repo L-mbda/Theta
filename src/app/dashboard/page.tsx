@@ -113,7 +113,8 @@ export default function DashboardPage() {
                                 ) : (null)
                             }
                             {/* Create question if service exists */}
-                            <div className="grid pt-2">
+                            {/* <div className="grid pt-2"> */}
+                            <div className="grid grid-cols-1 lg:grid-cols-3 gap-4">
                                 {
                                     // Ternary operation for rendering
                                     // @ts-ignore
@@ -132,7 +133,7 @@ export default function DashboardPage() {
                                                 serviceState.map((data) => {
                                                     return (
                                                         // Return div as a card with monitor information
-                                                        <Link href={'/service?id=' + data.id} className="min-h-[200px] lg:w-[30%] w-[75%] bg-gray-800 rounded-md flex flex-col p-5 items-center justify-center gap-4" key={data}>
+                                                        <Link href={'/service?id=' + data.id} className="min-h-[200px] lg:w-[100%] w-[90%] bg-gray-800 rounded-md flex flex-col p-5 items-center justify-center gap-4" key={data}>
                                                             <h1 className="font-bold">{data.name}</h1>
                                                             {/* Flex */}
                                                             {/* Card that redirects you to manage the service */}
@@ -153,7 +154,7 @@ export default function DashboardPage() {
                         </div>
                     </div>
                     {/* Footer */}
-                    <footer className="flex bottom-3 absolute gap-4 items-center w-full invisible md:visible justify-center">
+                    <footer className="flex pb-3 bottom-3 gap-4 items-center w-full invisible md:visible justify-center">
                         <p>Theta v1 Enterprise</p>
                         <p>©{new Date().getFullYear()} L-mbda. Licensed under the MPL-v2 license.</p>
                     </footer>

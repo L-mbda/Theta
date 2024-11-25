@@ -1,6 +1,5 @@
 'use client'
 import { Authenticate } from "@/platform/Account"
-import {getServices} from "@/platform/Services"
 import { useEffect, useState } from "react"
 import {deleteCookie} from "cookies-next";
 // Icons imports
@@ -197,7 +196,7 @@ export default function DashboardPage() {
                         }
                     </div>
                     {/* Footer */}
-                    <footer className="flex bottom-3 absolute gap-4 items-center w-full invisible md:visible justify-center">
+                    <footer className="flex bottom-3 pb-3 gap-4 items-center w-full invisible md:visible justify-center">
                         <p>Theta v1 Enterprise</p>
                         <p>©{new Date().getFullYear()} L-mbda. Licensed under the MPL-v2 license.</p>
                     </footer>
