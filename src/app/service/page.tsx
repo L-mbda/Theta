@@ -1,12 +1,13 @@
 'use client';
 
-import { useSearchParams } from "next/navigation";
+// import { useSearchParams } from "next/navigation";
 
 export default function ServicePage() {
-    console.log(useSearchParams().get("id"));
+    // const search = useSearchParams();
+    // const id = search.get("id");
     return (
         <>
-            <h1>Network ID {useSearchParams().get("id")}</h1>
+            <h1>Network ID</h1>
         </>
     )
 }

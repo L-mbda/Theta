@@ -5,7 +5,7 @@
   "scripts": {
     "dev": "bun server.ts",
     "build": "next build",
-    "start": "next start",
+    "start": "NODE_ENV=production bun server.ts",
     "lint": "next lint",
     "push": "drizzle-kit push",
     "migrate": "drizzle-kit generate && drizzle-kit push"
