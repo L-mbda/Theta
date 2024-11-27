@@ -1,7 +1,6 @@
 'use client'
 import { Authenticate } from "@/platform/Account"
 import { useEffect, useState } from "react"
-import {deleteCookie} from "cookies-next";
 // Icons imports
 import { Button, Loader, NumberInput, SegmentedControl, Text, TextInput } from "@mantine/core";
 import { redirect, useRouter } from "next/navigation";
@@ -59,9 +58,8 @@ export default function DashboardPage() {
     } else {
         // If undefined, delete cookie and redirect
         if (user == undefined) {
-            deleteCookie('token');
             // Redirect
-            return redirect('/theta')
+            return redirect('/logout')
         } else {
             // createService function
             function createService(event: any) {
@@ -83,7 +81,7 @@ export default function DashboardPage() {
                     'body': JSON.stringify({
                         'serviceName': serviceName,
                         'monitorType': monitorType,
-                        'heartbeatInterval': heartbeatInterval,
+                        'heartbeatInterval': (heartbeatInterval > 0) ? heartbeatInterval : 1,
                         'maximumRetries': maximumRetries,
                         'monitorURL': monitorURL,
                     })
@@ -160,7 +158,7 @@ export default function DashboardPage() {
                                                     )
                                                 }
                                                 {/* Max retries, hearbeat, etc/ */}                                                                                                {/* Max retries, hearbeat, etc/ */}
-                                                <NumberInput name="heartbeat_interval" id="heartbeat_interval" placeholder="6" size="md" label={'Heartbeat Interval'} radius={"xl"} min={1} description={(
+                                                <NumberInput name="heartbeat_interval" value={1} id="heartbeat_interval" placeholder="6" size="md" label={'Heartbeat Interval'} radius={"xl"} min={1} description={(
                                                     <span id="heartbeat_interval_text">
                                                         The service will be checked every second.
                                                     </span>

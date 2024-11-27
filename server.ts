@@ -47,14 +47,12 @@ export async function registerTasks() {
                 // If greater than maximum retries, add to service history of database not being reachable
                 if (!serviceError) {
                     // Add to service history of database not being reachable
-                    async () => {
-                        // @ts-ignore
-                        await (await db).insert(serviceHistory).values({
-                            'reachableStatus': false,
-                            'date': new Date(),
-                            'serviceID': service.id
-                        })
-                    }
+                    // @ts-ignore
+                    await (await db).insert(serviceHistory).values({
+                        'reachableStatus': false,
+                        'serviceID': service.id,
+                        'time': (new Date().getTime()).toString(),
+                    })
                     // Log service not responding and stopping service
                     console.log(chalk.redBright(`❌ Service ${service.name} is not reachable! Stopped servicing.`))
                 }
@@ -62,21 +60,19 @@ export async function registerTasks() {
                 serviceError = true;
             } else if (service.monitorType == "ping") {
                 // Ping service
-                ping({address: service.monitorURL}, (err, data) => {
+                ping({address: service.monitorURL}, async (err, data) => {
                     // Check if error and increment errors
                     if (err || data.max == undefined && data.min == undefined) {
                         serviceErrorCount++;
                     // If address is equal to the monitor url, insert into the service history of a record of the server being reachable
                     } else if (data.address == service.monitorURL) {
-                        async () => {
-                            // @ts-ignore
-                            await (await db).insert(serviceHistory).values({
-                                'reachableStatus': true,
-                                'date': new Date(),
-                                'serviceID': service.id
-                            })
-                        }
-                        // Log that the server is reachable
+                        // @ts-ignore
+                        await (await db).insert(serviceHistory).values({
+                            'reachableStatus': true,
+                            'serviceID': service.id,
+                            'time': (new Date().getTime()).toString(),
+                        })
+                        // Log that the server is reachable                        
                         console.log(chalk.greenBright(`✅ Service ${service.name} is reachable!`))
                     }
                 })
@@ -87,14 +83,12 @@ export async function registerTasks() {
                     const fetchInfo = await axios.get((service.monitorURL.startsWith("http://") || service.monitorURL.startsWith("https://")) ? service.monitorURL : "http://" + service.monitorURL);
                     // If status is "SUCCESSFUL" as per HTTP terms, insert into the service history of being reachable, otherwise increment errors
                     if (fetchInfo.status >= 200 && fetchInfo.status < 300) {
-                        async () => {
-                            // @ts-ignore
-                            await (await db).insert(serviceHistory).values({
-                                'reachableStatus': true,
-                                'date': new Date(),
-                                'serviceID': service.id
-                            })
-                        }
+                        // @ts-ignore
+                        await (await db).insert(serviceHistory).values({
+                            'reachableStatus': true,
+                            'serviceID': service.id,
+                            'time': (new Date().getTime()).toString(),
+                        })
                         // Log server being reachable
                         console.log(chalk.greenBright(`✅ Service ${service.name} is reachable!`))
                     } else {

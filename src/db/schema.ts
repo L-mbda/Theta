@@ -1,4 +1,4 @@
-import { boolean, char, date, integer, pgTable, uuid, varchar } from "drizzle-orm/pg-core";
+import { boolean, char, date, integer, pgTable, time, uuid, varchar } from "drizzle-orm/pg-core";
 
 /*
     Our user table for the data within the database
@@ -34,7 +34,8 @@ export const serviceHistory = pgTable("serviceHistory", {
     id: uuid().defaultRandom().notNull(),
     serviceID: uuid().notNull(),
     reachableStatus: boolean().default(false),
-    date: date().notNull(),
+    // Time string because of storing UNIX epoch
+    time: varchar({length: 256}).notNull(),
 })
 
 /*

@@ -2,7 +2,6 @@
 import { Authenticate } from "@/platform/Account"
 import {getServices} from "@/platform/Services"
 import { useEffect, useState } from "react"
-import {deleteCookie} from "cookies-next";
 // Icons imports
 import { BadgeCheck, CircleAlert, HeartPulse, PlusSquareIcon } from "lucide-react";
 import { Button } from "@mantine/core";
@@ -83,9 +82,7 @@ export default function DashboardPage() {
 
         // If undefined, delete cookie and redirect
         if (user == undefined) {
-            deleteCookie('token');
-            // Redirect
-            return redirect('/theta')
+            return redirect('/logout');
         } else {
             // Actual thing we are rendering
             return (

@@ -129,3 +129,85 @@ export async function Authenticate() {
         return redirect('/theta');
     }
 }
+
+/*
+    Modified authenticate function for server-side rendering
+*/
+export async function AuthenticateServer() {
+    // Get cookies and token
+    const token = await (await cookies()).get('token');
+    // Check if undefined
+    if (token !== undefined) {
+        try {
+            // Verification of the token utilizing the secret key and stuff
+            // @ts-expect-error Error is expected since we have crypto.createSecretKey
+            const cooken = await jwt.jwtVerify(token.value,crypto.createSecretKey(process.env?.JWT_SECRET));
+            // Get user account
+            const userAccount = await (await db).select({
+                'username': user.username,
+                'role': user.role,
+                'name': user.name,
+            // @ts-expect-error since it is a file that needs it because of the eq() operator.
+            }).from(user).where(eq(user.id, cooken.payload?.id))
+            if (userAccount.length == 0) {
+                return redirect('/logout')
+            } else {
+                return userAccount[0];
+            }
+        // Erase cookie if invalid and go to theta
+        } catch (error) {
+            return redirect('/logout')
+        }
+    } else {
+        return redirect('/logout');
+    }
+}
+
+/*
+    Modified authenticate function for API's
+*/
+export async function AuthenticateAPI() {
+    // Get cookies and token
+    const token = await (await cookies()).get('token');
+    // Check if undefined
+    if (token !== undefined) {
+        try {
+            // Verification of the token utilizing the secret key and stuff
+            // @ts-expect-error Error is expected since we have crypto.createSecretKey
+            const cooken = await jwt.jwtVerify(token.value,crypto.createSecretKey(process.env?.JWT_SECRET));
+            // Get user account
+            const userAccount = await (await db).select({
+                'username': user.username,
+                'role': user.role,
+                'name': user.name,
+            // @ts-expect-error since it is a file that needs it because of the eq() operator.
+            }).from(user).where(eq(user.id, cooken.payload?.id))
+            if (userAccount.length == 0) {
+                return {
+                    'valid': false
+                }
+            } else {
+                return {
+                    'valid': true,
+                    'user': userAccount[0]
+                }
+            }
+        // Erase cookie if invalid and go to theta
+        } catch (error) {
+            return {
+                'valid': false
+            }
+        }
+    } else {
+        return {
+            'valid': false
+        }
+    }
+}
+
+/*
+    Helper function to delete cookie and logout of the account
+*/
+export async function LogoutAccount() {
+    (await cookies()).delete('token');
+}
