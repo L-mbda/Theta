@@ -3,11 +3,9 @@
 import { db } from "@/db/db";
 import { services } from "@/db/schema";
 import { AuthenticateServer } from "@/platform/Account";
-import { GenerateServiceGraph } from "@/platform/components/GenerateServiceGraph";
-import { ServiceCheck } from "@/platform/components/ServiceCheck";
-import { Button, Group } from "@mantine/core";
+import { Button, Group, TextInput } from "@mantine/core";
 import { eq } from "drizzle-orm";
-import { GroupIcon, HeartPulse, IdCardIcon, Monitor, MonitorDot, PencilIcon, PhoneOutgoingIcon } from "lucide-react";
+import { GroupIcon, HeartPulse, IdCardIcon, Monitor, PencilIcon } from "lucide-react";
 import Link from "next/link";
 
 export default async function ServicePage({params, searchParams}: any) {
@@ -19,7 +17,7 @@ export default async function ServicePage({params, searchParams}: any) {
         // Obtain database information
         const serviceInfo = await (await db).select().from(services).where(eq(services.id, id))
         // Check if exists, if not, then render a not found page
-        if (serviceInfo.length === 0) {
+        if (serviceInfo.length === 0 || userInfo.role == 'user') {
             return (
                 <main>
                     <nav className="bg-inherit border-b-gray-700 border-b-[1px] p-5 shadow-lg flex flex-row">
@@ -60,9 +58,9 @@ export default async function ServicePage({params, searchParams}: any) {
                 <div className="bg-inherit border-b-gray-700 border-b-[1px] p-5 shadow-lg flex flex-row items-center gap-5">
                     <h1 className="font-semibold">{service.name}</h1>
                     <Group justify="center">
-                        <Button color="gray" className="flex items-center" leftSection={<GroupIcon size={20} className="justify-center" />} component={Link} href={`/service?id=${id}`}><span className="text-[15px] font-bold">Overview</span></Button>
+                        <Button color="dark" className="flex items-center" leftSection={<GroupIcon size={20} className="justify-center" />} component={Link} href={`/service?id=${id}`}><span className="text-[15px] font-bold">Overview</span></Button>
                         {
-                            (userInfo.role === 'admin' || userInfo.role === 'owner') ?                     <Button color="dark" className="flex items-center" leftSection={<PencilIcon size={20} className="justify-center" />} component={Link} href={`/service/edit?id=${id}`}><span className="text-[15px] font-bold">Edit Service</span></Button>
+                            (userInfo.role === 'admin' || userInfo.role === 'owner') ?                     <Button color="gray" className="flex items-center" leftSection={<PencilIcon size={20} className="justify-center" />} component={Link} href={`/service/edit?id=${id}`}><span className="text-[15px] font-bold">Edit Service</span></Button>
                             : null 
                         }
                     </Group>
@@ -71,22 +69,15 @@ export default async function ServicePage({params, searchParams}: any) {
                 <div className="flex flex-col p-10 gap-3">
                     {/* Basic information */}
                     <div>
-                        <h1 className="text-[50px] font-black">{service.name}</h1>
+                        <h1 className="text-[50px] font-black"><span className="font-semibold">Edit</span> {service.name}</h1>
                         <p className="text-[15px] flex flex-row gap-2 items-center"><IdCardIcon size={20} /><code>{service.id}</code></p>
-                        <p className="text-[18px] flex gap-2 items-center"><HeartPulse size={24} />{service.heartbeatInterval > 1 ? (service.heartbeatInterval): (1)} {
-                            (service.heartbeatInterval > 1) ? 'seconds' : 'second'
-                        }</p>
-                        <p className="text-[18px] flex gap-2 items-center">
-                            <Monitor size={24} />{service.monitorType}
-                        </p>
-                        {/* Show if currently online or offline */}
-                        <ServiceCheck id={id} />
                     </div>
                     <br />
-                    <br />
-                    <br />
-                    {/* For graph generation */}
-                    <GenerateServiceGraph id={id} />
+                    {/* Service inputs */}
+                    <form>
+                        <TextInput label="Service Name" placeholder="Service Name" required />
+                        
+                    </form>
                 </div>
                 {/* Footer */}
                 <footer className="flex pb-3 bottom-3 gap-4 items-center w-full invisible md:visible justify-center">
@@ -123,5 +114,6 @@ export default async function ServicePage({params, searchParams}: any) {
                 </footer>
             </main> 
         )
+       
     }
 }

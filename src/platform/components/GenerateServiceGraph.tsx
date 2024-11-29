@@ -36,8 +36,6 @@ export function GenerateServiceGraph({id}: any) {
     const [datapoint, setDataPoint] = useState<UptimePoint[]>([]);
     // Set loading state
     const [loadingState, setLoadingState] = useState(true);
-    // Set error state
-    const [errorState, setErrorState] = useState(false);
     // Use effect
     useEffect(() => {
         // Fetch service history
