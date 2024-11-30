@@ -14,7 +14,7 @@ export async function POST(request: NextRequest) {
     // Obtain data
     const data = await request.json();
     // Check if user is properly authenticated
-    let authenticationData = await AuthenticateAPI();
+    const authenticationData = await AuthenticateAPI();
     // If authentication.valid is false or roles dont match, reject
     if (authenticationData.valid == false || 
         // @ts-ignore

@@ -8,6 +8,7 @@ import { Button } from "@mantine/core";
 import { redirect, useRouter } from "next/navigation";
 import Link from "next/link";
 import { io } from "socket.io-client";
+import { ServiceCheck } from "@/platform/components/ServiceCheck";
 
 // Connect to socketio
 const socket = io("http://localhost:3001");
@@ -88,9 +89,22 @@ export default function DashboardPage() {
             return (
                 <main>
                     {/* Navbar */}
-                    <nav className="bg-inherit border-b-gray-700 border-b-[1px] p-5 shadow-lg flex flex-row">
-                        <h1 className="font-black text-[30px]">Theta</h1>
+                    <nav className="bg-inherit border-b-gray-700 border-b-[1px] p-5 shadow-lg flex flex-row items-center">
+                        <Link href={'/dashboard'} className="font-black text-[30px]">Theta</Link>
                     </nav>
+                    {/* Links */}
+                    <div className="flex flex-row gap-4 p-5">
+                        <Link href={'/dashboard'} className="flex gap-2 items-center hover:bg-gray-700 p-2 rounded-lg transition-all">
+                            <p>Dashboard</p>
+                        </Link>
+                        <Link href={'/status'} className="flex gap-2 items-center hover:bg-gray-700 p-2 rounded-lg transition-all">
+                            <p>Page</p>
+                        </Link>
+                        <Link href={'/settings'} className="flex gap-2 items-center hover:bg-gray-700 p-2 rounded-lg transition-all">
+                            <p className="flex flex-row items-center justify-center">Settings</p>
+                        </Link>
+                    </div>
+
                     {/* Body for our content */}
                     <div className="flex flex-col p-10 gap-3">
                         {/* For our welcome header */}
@@ -147,6 +161,7 @@ export default function DashboardPage() {
                                                                 <div className="flex flex-row gap-3">
                                                                     <p className="flex flex-row justify-center items-center gap-1"><BadgeCheck /> {data.monitorType}</p>
                                                                     <p className="flex flex-row justify-center items-center gap-1"><HeartPulse /> {data.heartbeatInterval} second(s)</p>
+                                                                    <ServiceCheck id={data.id} />
                                                                 </div>
                                                             </div>
                                                         </Link>

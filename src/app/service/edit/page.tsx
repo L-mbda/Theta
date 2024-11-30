@@ -3,9 +3,11 @@
 import { db } from "@/db/db";
 import { services } from "@/db/schema";
 import { AuthenticateServer } from "@/platform/Account";
+import { EditServiceComponent } from "@/platform/components/EditServiceComponent";
+import { deleteService, editService } from "@/platform/Services";
 import { Button, Group, TextInput } from "@mantine/core";
 import { eq } from "drizzle-orm";
-import { GroupIcon, HeartPulse, IdCardIcon, Monitor, PencilIcon } from "lucide-react";
+import { GroupIcon, IdCardIcon, PencilIcon, Trash2Icon } from "lucide-react";
 import Link from "next/link";
 
 export default async function ServicePage({params, searchParams}: any) {
@@ -53,7 +55,7 @@ export default async function ServicePage({params, searchParams}: any) {
             <main>
                 {/* Navbar */}
                 <nav className="bg-inherit border-b-gray-700 border-b-[1px] p-5 shadow-lg flex flex-row">
-                    <h1 className="font-black text-[30px]">Theta</h1>
+                    <Link href={'/dashboard'} className="font-black text-[30px]">Theta</Link>
                 </nav>
                 <div className="bg-inherit border-b-gray-700 border-b-[1px] p-5 shadow-lg flex flex-row items-center gap-5">
                     <h1 className="font-semibold">{service.name}</h1>
@@ -73,11 +75,28 @@ export default async function ServicePage({params, searchParams}: any) {
                         <p className="text-[15px] flex flex-row gap-2 items-center"><IdCardIcon size={20} /><code>{service.id}</code></p>
                     </div>
                     <br />
-                    {/* Service inputs */}
-                    <form>
-                        <TextInput label="Service Name" placeholder="Service Name" required />
-                        
-                    </form>
+                    <div className="flex flex-row gap-10">
+                        {/* Service inputs */}
+                        {/* Send to action */}
+                        <form className="w-[50%]" action={editService}>
+                            {/* Edit service component */}
+                            <EditServiceComponent serviceComponent={service} />
+                        </form>
+                        {/* Danger actions */}
+                        <div className="flex flex-col gap-5 max-w-[30vw]">
+                            <div>
+                                <h1 className="font-bold text-[20px]">Other Actions</h1>
+                                <p>Please note that clicking the buttons will result in service deletion.</p>                                   
+                            </div>
+                            {/* Delete the service */}
+                            <form action={deleteService}>
+                                {/* Our text containing the ID */}
+                                <TextInput type="hidden" value={service.id} name="id" />
+                                {/* Button to submit to be able to delete the service */}
+                                <Button color="red" type="submit" leftSection={(<Trash2Icon />)}>Delete Service</Button>
+                            </form>
+                        </div>                            
+                    </div>
                 </div>
                 {/* Footer */}
                 <footer className="flex pb-3 bottom-3 gap-4 items-center w-full invisible md:visible justify-center">

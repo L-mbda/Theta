@@ -109,13 +109,28 @@ export async function registerTasks() {
 // Check the database and reinject tasks
 async function checkDatabase() {
     // Create the task and check databases
-    let databaseLength = (await (await db).select().from(services)).length;
+    let oldDatabaseInfo = (await (await db).select().from(services));
     const task = new ToadScheduler.Task("injectTask", async () => {
         // Obtain database information
         let databaseInformation = await (await db).select().from(services);
-        // Check if the database length is different
-        if (databaseInformation.length != databaseLength) {
-            console.log(chalk.magentaBright("> Database length for service count changed, reinjecting tasks."));
+        // Create flag 
+        let sameDatabaseValues = true;
+        // Check if info is same
+        for (let i in databaseInformation) {
+            // Try statements to prevent out of bound errors
+            try {
+                // Comparing the name and other attributes to see if equal, if not, then set to false
+                if (databaseInformation[i].name != oldDatabaseInfo[i].name || databaseInformation[i].monitorType != oldDatabaseInfo[i].monitorType || databaseInformation[i].monitorURL != oldDatabaseInfo[i].monitorURL || databaseInformation[i].heartbeatInterval != oldDatabaseInfo[i].heartbeatInterval || databaseInformation[i].maxRetries != oldDatabaseInfo[i].maxRetries) {
+                    sameDatabaseValues = false;
+                    break;
+                }
+            } catch (e) {
+                break;
+            }
+        }
+        // Check if the database length is different or if information changed
+        if (databaseInformation.length != oldDatabaseInfo.length || !sameDatabaseValues) {
+            console.log(chalk.magentaBright("> Database changed, reinjecting tasks."));
             // If different, stop the scheduler and reinject tasks
             scheduler.stop();
             await registerTasks();

@@ -99,7 +99,7 @@ export default function DashboardPage() {
                 <main>
                     {/* Navbar */}
                     <nav className="bg-inherit border-b-gray-700 border-b-[1px] p-5 shadow-lg flex flex-row">
-                        <h1 className="font-black text-[30px]">Theta</h1>
+                        <Link href={'/dashboard'} className="font-black text-[30px]">Theta</Link>
                     </nav>
                     {/* Body for our content */}
                     <div className="flex flex-col p-10 gap-3">

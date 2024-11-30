@@ -11,9 +11,9 @@ import { NextRequest, NextResponse } from "next/server";
 
 // Routes
 export async function POST(request: NextRequest) {
-    let data = await request.json();
+    const data = await request.json();
     // Obtain all database information
-    let databaseInformation = await (await db).select({
+    const databaseInformation = await (await db).select({
         "time": serviceHistory.time,
         "reachableStatus": serviceHistory.reachableStatus,
     }).from(serviceHistory)
