@@ -1,4 +1,5 @@
 import { AuthenticateServer } from "@/platform/Account";
+import Link from "next/link";
 
 // default exports
 export default async function Settings() {
@@ -10,7 +11,7 @@ export default async function Settings() {
         <>
             <main>
                 <nav className="bg-inherit border-b-gray-700 border-b-[1px] p-5 shadow-lg flex flex-row">
-                    <h1 className="font-black text-[30px]">Theta</h1>
+                    <Link href={'/dashboard'} className="font-black text-[30px]">Theta</Link>
                 </nav>
                 <div className="flex flex-col justify-center items-center min-h-[80vh]">
                 </div>
