@@ -87,11 +87,11 @@ export async function loginToAccount(data: FormData) {
             return redirect('/dashboard')
         } else {
             // Return error
-            return redirect('?message=Incorrect username or password.')
+            return redirect('/theta?message=Incorrect username or password.')
         }
     } else {
         // Return error code with incorrect username or password
-        return redirect('?message=Incorrect username or password.')
+        return redirect('/theta?message=Incorrect username or password.')
     }
 }
 

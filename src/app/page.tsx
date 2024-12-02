@@ -91,6 +91,9 @@ export default async function Home() {
       {/* Services */}
       <div className='w-full flex flex-col items-center'>
           <h1 className='font-extrabold text-[30px]'>Services</h1>
+          {/* Ternary operator ton state that no services were made. */}
+          {
+            hierarchyArray.length == 0 ? (<h1>No services available.</h1>) : (<>
           <div className='flex flex-col gap-4 w-[80%]'>
               {
                   hierarchyArray.map((service, index) => (
@@ -106,6 +109,7 @@ export default async function Home() {
                   ))
               }
           </div>
+          </>) }
       </div>
       {/* Footer */}
       <div className='flex flex-col justify-center items-center gap-2'>

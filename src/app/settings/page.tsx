@@ -13,7 +13,8 @@ export default async function Settings() {
                 <nav className="bg-inherit border-b-gray-700 border-b-[1px] p-5 shadow-lg flex flex-row">
                     <Link href={'/dashboard'} className="font-black text-[30px]">Theta</Link>
                 </nav>
-                <div className="flex flex-col justify-center items-center min-h-[80vh]">
+                <div className="flex flex-col justify-center items-center min-h-[90vh]">
+                    
                 </div>
                 <footer className="flex pb-3 bottom-3 gap-4 items-center w-full invisible md:visible justify-center">
                     <p>Theta v1 Enterprise</p>
