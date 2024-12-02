@@ -150,10 +150,11 @@ export default function DashboardPage() {
                                             {
                                                 // Mapping service state using data
                                                 // @ts-ignore
-                                                serviceState.map((data) => {
+                                                serviceState.map((data,id) => {
                                                     return (
                                                         // Return div as a card with monitor information
-                                                        <Link href={'/service?id=' + data.id} className="min-h-[200px] lg:w-[100%] w-[90%] bg-gray-800 rounded-md flex flex-col p-5 items-center justify-center gap-4" key={data}>
+                                                        <Link href={'/service?id=' + data.id} className="min-h-[200px] lg:w-[100%] w-[90%] bg-gray-800 rounded-md flex flex-col p-5 items-center justify-center gap-4"
+                                                        key={id}>
                                                             <h1 className="font-bold">{data.name}</h1>
                                                             {/* Flex */}
                                                             {/* Card that redirects you to manage the service */}

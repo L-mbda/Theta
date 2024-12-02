@@ -78,3 +78,15 @@ export async function deleteIncident(event: FormData) {
     // Return redirect
     return redirect('/status')
 }
+
+/*
+    Function to change the status page name and other essentials
+*/
+export async function changeStatusPageName(event: FormData) {
+    const newName = await event.get('new_name');
+    // Update name based on manager ID
+    // @ts-ignore
+    (await (await db).update(manager).set({"name": newName}).where(eq(manager.id, (await (await db).select().from(manager))[0].id)))
+    // Refresh page
+    return redirect('/settings');
+}

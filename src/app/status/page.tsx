@@ -83,7 +83,8 @@ export default async function Settings() {
                         <CreateIncident />
                         {
                             (statusManager.pagePublished) ? (
-                                <Button leftSection={(<ExternalLink size={20} />)} color="grape" component={Link} href={'/'}>View Page</Button>
+                                // Button that opens the site in the new tab
+                                <Button leftSection={(<ExternalLink size={20} />)} color="grape" component={Link} href={'/'} target="_blank">View Page</Button>
                             ) : null
                         }
                     </div>
