@@ -5,7 +5,7 @@
 */
 // Imports
 import { db } from "@/db/db";
-import { manager, services } from "@/db/schema";
+import { manager, serviceHierarchy, services } from "@/db/schema";
 import { AuthenticateAPI } from "@/platform/Account";
 import { NextRequest, NextResponse } from "next/server";
 
@@ -36,13 +36,21 @@ export async function POST(request: NextRequest) {
         monitorURL: URL of the monitor/hostname
     */
     // Insert information into the database
-    await db.insert(services).values({
+    const databaseInfo = await (await db).insert(services).values({
         'name': data.serviceName,
         'managerID': (await db.select().from(manager))[0].id,
         'heartbeatInterval': (data.heartbeatInterval > 0) ? data.heartbeatInterval : 1,
         'maxRetries': data.maximumRetries,
         'monitorType': data.monitorType,
         'monitorURL': data.monitorURL
+    }).returning()
+    // Insert service id into service hierarchy
+    // @ts-ignore
+    await (await db).insert(serviceHierarchy).values({
+        // Get length of service hierarchy and increment by 1
+        'id': (await (await db).select().from(serviceHierarchy)).length + 1,
+        'parentID': (await db.select().from(manager))[0].id,
+        'serviceID': databaseInfo[0].id,
     })
     return NextResponse.json({
         'name': 'Service successfully created!',

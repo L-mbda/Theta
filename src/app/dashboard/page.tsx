@@ -94,11 +94,11 @@ export default function DashboardPage() {
                     </nav>
                     {/* Links */}
                     <div className="flex flex-row gap-4 p-5">
-                        <Link href={'/dashboard'} className="flex gap-2 items-center hover:bg-gray-700 p-2 rounded-lg transition-all">
+                        <Link href={'/dashboard'} className="flex gap-2 items-center hover:bg-gray-700 bg-gray-800 p-2 rounded-lg transition-all">
                             <p>Dashboard</p>
                         </Link>
                         <Link href={'/status'} className="flex gap-2 items-center hover:bg-gray-700 p-2 rounded-lg transition-all">
-                            <p>Page</p>
+                            <p>Status Page</p>
                         </Link>
                         <Link href={'/settings'} className="flex gap-2 items-center hover:bg-gray-700 p-2 rounded-lg transition-all">
                             <p className="flex flex-row items-center justify-center">Settings</p>

@@ -47,7 +47,7 @@ export async function createOwnerAccount(formInfo: FormData) {
         if ((await (await db).select().from(manager)).length == 0) {
             await (await db).insert(manager).values({
                 name: fullName + "'s status page",
-                loginOnly: true
+                pagePublished: false
             })    
         }
         // Redirect back to theta to allow for login

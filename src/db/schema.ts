@@ -56,5 +56,26 @@ export const manager = pgTable("manager", {
     // Get ID of service as a UUID
     id: uuid().defaultRandom().notNull(),
     name: varchar({length: 255}).notNull(),
-    loginOnly: boolean().notNull(),
+    pagePublished: boolean().notNull(),
+})
+
+/*
+    Table for storing incidents
+*/
+export const incidents = pgTable("incidents", {
+    id: uuid().defaultRandom().notNull(),
+    name: varchar({length: 255}).notNull(),
+    description: varchar({length: 1024}).notNull(),
+    firstCreated: varchar({length: 256}).notNull(),
+    lastUpdated: varchar({length: 256}).notNull(),
+})
+
+/*
+    Table for storing the hierarchy of services
+*/
+export const serviceHierarchy = pgTable("serviceHierarchy", {
+    trueID: uuid().notNull().primaryKey().defaultRandom(),
+    id: integer(),
+    serviceID: uuid().notNull(),
+    parentID: uuid().notNull(),
 })

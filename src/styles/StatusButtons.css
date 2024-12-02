@@ -1,0 +1,28 @@
+/* 
+    Style file for the StatusButtons component
+    ©2024 L-mbda. Open source under the MPL-v2 license.
+*/
+
+/* Style tweaks for the mantine modal components
+*/
+.mantine-Modal-content {
+    background-color: #2b2b2b;
+}
+
+.mantine-Modal-header {
+    background-color: #2b2b2b;
+}
+
+.mantine-Modal-body {
+    background-color: #2b2b2b;
+}
+
+/* Button style tweaks */
+.mantine-CloseButton-root {
+    color: #fff;
+    transition: 400ms;
+}
+
+.mantine-CloseButton-root:hover {
+    background-color: gray;
+}

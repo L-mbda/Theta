@@ -4,7 +4,7 @@
 */
 "use server"
 import {db} from '@/db/db'
-import { serviceHistory, services } from "@/db/schema";
+import { serviceHierarchy, serviceHistory, services } from "@/db/schema";
 import { eq } from 'drizzle-orm';
 import { redirect } from 'next/navigation';
 
@@ -86,6 +86,9 @@ export async function deleteService(params: FormData) {
     // Wipe information from service history
     // @ts-ignore
     await (await db).delete(serviceHistory).where(eq(serviceHistory.serviceID, id));
+    // Wipe information from service hierarchy
+    // @ts-ignore
+    await (await db).delete(serviceHierarchy).where(eq(serviceHierarchy.serviceID, id));
     // Return and redirect to dashboard
     return redirect('/dashboard');
 }

@@ -58,7 +58,7 @@ export function GenerateServiceGraph({id}: any) {
             setLoadingState(false);
         }
         fetchServiceHistory();
-    }, [])
+    }, [id])
     return (
         <>
             {loadingState ? (<Center>
@@ -85,7 +85,7 @@ export function GenerateServiceGraph({id}: any) {
                         />
                         <Line
 
-                            type="natural"
+                            type="linear"
                             dataKey="uptime"
                             stroke="#007bff"
                             strokeWidth={2}
