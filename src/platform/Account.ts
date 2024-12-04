@@ -211,3 +211,36 @@ export async function AuthenticateAPI() {
 export async function LogoutAccount() {
     (await cookies()).delete('token');
 }
+
+/*
+    Function to be able to create a new user account
+*/
+export async function createUserAccount(data: FormData) {
+    const userAccount = await AuthenticateAPI();
+    // Check data
+    const [fullName, username, password, rolea] = [await data.get("name"), await data.get("username"), await data.get("password"), await data.get('role')]
+    const hashedPassword = await crypto.createHash("sha3-256").update(password + "").digest("hex");
+    // Create the salting variables
+    const salt1 = crypto.randomBytes(256).toString('hex');
+    const salt2 = crypto.randomBytes(256).toString('hex');
+
+    // Check if account username doesnt exist and continue and check proper authentication
+    // @ts-ignore
+    if ((await (await db).select().from(user).where(eq(user.username, username))).length == 0 && userAccount.valid && (userAccount).user.role != 'user') {
+        await db.insert(user).values({
+            // @ts-ignore
+            'name': fullName,
+            'role': 'user',
+            'username': username,
+            'salt1': salt1,
+            'salt2': salt2,
+            // Hash the password utilizing SHA512
+            'password': crypto.createHash("sha3-512").update(salt1 + hashedPassword + salt2).digest("hex"),
+            // Get Role and place
+            // @ts-ignore
+            'role': ((userAccount).user.role == 'owner') ? rolea : "user",
+        })
+    }
+    // Return redirect to settings
+    return redirect('/settings');
+}
