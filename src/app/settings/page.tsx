@@ -1,7 +1,7 @@
 import { db } from "@/db/db";
 import { manager, user } from "@/db/schema";
 import { AuthenticateServer } from "@/platform/Account";
-import { CreateAccount } from "@/platform/components/Settings";
+import { CreateAccount, UserTable } from "@/platform/components/Settings";
 import { changeStatusPageName } from "@/platform/Manager";
 import { Button, TextInput } from "@mantine/core";
 import { eq } from "drizzle-orm";
@@ -14,7 +14,6 @@ export default async function Settings() {
     const userInfo = await AuthenticateServer();
     // Get status page manager info
     const managerInfo = (await (await db).select().from(manager))[0]
-    console.log(await (await db).select().from(user));
     // Render page
     return (
         <>
@@ -66,6 +65,13 @@ export default async function Settings() {
                             <div className="flex flex-row gap-2">
                                 <CreateAccount userRole={userInfo.role} />
                             </div>
+                            {/* Users */}
+                            <UserTable users={(await (await db).select({
+                                'id': user.id,
+                                'name': user.name,
+                                'username': user.username,
+                                'role': user.role,
+                            }).from(user))} permissions={userInfo.role} />                            
                         </>): null
                     }
                 </div>

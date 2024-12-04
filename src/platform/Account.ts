@@ -244,3 +244,24 @@ export async function createUserAccount(data: FormData) {
     // Return redirect to settings
     return redirect('/settings');
 }
+
+/*
+    Function to delete user account
+*/
+export async function deleteUserAccount(data: FormData) {
+    const userAccount = await AuthenticateAPI();
+    const [accountID] = await [data.get('user_id')];
+    // Get target account ID
+    // @ts-ignore
+    const targetAccount = await (await db).select().from(user).where(eq(user.id, accountID));
+    // Checks before deleting account
+    // @ts-ignore
+    if (userAccount.valid && userAccount.user.role != 'user' && targetAccount.length != 0 &&
+        // @ts-ignore
+        (userAccount.user.role == 'admin' ? 1 : (userAccount.user.role == 'owner') ? 2 : 0) > (targetAccount[0].role == 'admin' ? 1 : targetAccount[0].role == 'owner' ? 2 : 0)
+    ) {
+        // @ts-ignore
+        await (await db).delete(user).where(eq(user.id, accountID));
+        return redirect('/settings');
+    }
+}

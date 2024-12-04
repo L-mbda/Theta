@@ -6,10 +6,19 @@
 
 // Imports
 import "@/styles/StatusButtons.css";
-import { Button, Modal, NativeSelect, PasswordInput, Textarea, TextInput } from "@mantine/core";
+import { Button, Modal, NativeSelect, PasswordInput, Table, Textarea, TextInput } from "@mantine/core";
 import { useDisclosure } from '@mantine/hooks';
-import { UserPen, UserPlus } from "lucide-react";
-import { createUserAccount } from "../Account";
+import { Edit, Edit2, Trash, Trash2, UserPen, UserPlus } from "lucide-react";
+import { createUserAccount, deleteUserAccount } from "../Account";
+import { SyntheticEvent, useState } from "react";
+
+// For managing users, create an interface
+interface user {
+    id: number,
+    name: string,
+    username: string,
+    role: string,
+}
 
 /*
     Component for the create account button under the user access section
@@ -50,6 +59,127 @@ export function CreateAccount({userRole}: {userRole: string | null}) {
             </Modal>
             {/* Button to create an incident to open a modal */}
             <Button onClick={open} leftSection={(<UserPlus />)}>Create Account</Button>
+        </>
+    )
+}
+
+/*
+    Component for the delete account button under the user access section
+*/
+export function DeleteAccount({userRole, targetUser}: {userRole: string | null, targetUser: user}) {
+    const [opened, {open, close}] = useDisclosure(false);
+    return (
+        <>
+            {/* Modal */}
+            <Modal color="dark" opened={opened}
+            onClose={close} title={(<span className="flex flex-row justify-center items-center gap-3">
+                <Trash />
+                <p className="font-bold text-[17.5px]">Delete Account</p>
+            </span>)} centered>
+                {/* Body for Modal */}
+                <Modal.Body>
+                    <form className="flex flex-col gap-4" action={deleteUserAccount}>
+                        <h1>By deleting {targetUser.name}&apos;s account, you confirm that their access will be revoked to the server and their information will be deleted. This is not reversible.</h1>
+                        <TextInput name="user_id" className="hidden" defaultValue={targetUser.id} readOnly={true}/>
+                        {/* Button to Submit */}
+                        <Button type="submit" radius={'lg'} color="red">I confirm, delete the account</Button>
+                    </form>
+                </Modal.Body>
+            </Modal>
+            {/* Button to create an incident to open a modal */}
+            <Button onClick={open} color="red" leftSection={(<Trash2 />)}>Delete Account</Button>
+        </>
+    )
+}
+
+
+/*
+    Management button
+*/
+export function ManageAccount({userIdentity, role}: {userIdentity: user, role: string | null}) {
+    const [opened, {open, close}] = useDisclosure(false);
+    return (
+        <>
+            {/* Modal */}
+            <Modal color="dark" opened={opened}
+            onClose={close} title={(<span className="flex flex-row justify-center items-center gap-3">
+                <Edit />
+                <p className="font-bold text-[17.5px]">Manage Account</p>
+            </span>)} centered>
+                {/* Body for Modal */}
+                <Modal.Body>
+                    <form className="flex flex-col gap-4">
+                        <h1>This is the menu for managing {userIdentity.name}&apos;s account.</h1>
+                        {
+                            ((role == 'admin' ? 1 : (role == 'owner') ? 2 : 0) > (userIdentity.role == 'admin' ? 1 : userIdentity.role == 'owner' ? 2 : 0)) ?
+                            (
+                                <DeleteAccount userRole={role} targetUser={userIdentity} />
+                            ) : null
+                        }
+                    </form>
+                </Modal.Body>
+            </Modal>
+            {/* Button to create an incident to open a modal */}
+            <Button onClick={open} color="pink" leftSection={(<Edit2 />)}>Manage Account</Button>
+        </>
+    )
+}
+
+
+/*
+    Export users
+*/
+export function UserTable({users, permissions}: {users: any,permissions:any}) {
+    const [userAccess, setUsers] = useState<user[]>(users);
+    // Function to update search based on wha was looked up
+    function updateSearch(event: SyntheticEvent) {
+        const searchedArr = []
+        event.preventDefault()
+        // @ts-ignore
+        const searchKeyword = event.target.value;
+        if (searchKeyword == '') {
+            setUsers(users);
+            return;
+        }
+        for (const index in userAccess) {
+            // @ts-ignore
+            const account = userAccess[index];
+            // Search by name or username
+            if (account.name.toLowerCase().includes(searchKeyword.toLowerCase()) || account.username.toLowerCase().includes(searchKeyword.toLowerCase())) {
+                searchedArr.push(account);
+            }
+        }
+        setUsers(searchedArr);
+    }
+    return (
+        <>
+            {/* Search */}
+            <TextInput label="Filter" radius={'lg'} placeholder="Gon Freecss" description="Filter by name or username to be able to look up in accounts." onChange={updateSearch} />
+            <br />
+            {/* Table */}
+            <Table withRowBorders withColumnBorders>
+                <Table.Thead>
+                    <Table.Tr>
+                        <Table.Th>Name</Table.Th>
+                        <Table.Th>Username</Table.Th>
+                        <Table.Th>Role</Table.Th>
+                        <Table.Th>Management</Table.Th>
+                    </Table.Tr>
+                </Table.Thead>
+                {/* Body */}
+                <Table.Tbody>
+                    {
+                        userAccess.map((user, id) => (
+                            <Table.Tr key={id}>
+                                <Table.Td>{user.name}</Table.Td>
+                                <Table.Td>{user.username}</Table.Td>
+                                <Table.Td>{user.role}</Table.Td>
+                                <Table.Td><ManageAccount userIdentity={user} role={permissions} /></Table.Td>
+                            </Table.Tr>
+                        ))
+                    }
+                </Table.Tbody>
+            </Table>
         </>
     )
 }

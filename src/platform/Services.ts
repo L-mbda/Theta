@@ -7,6 +7,7 @@ import {db} from '@/db/db'
 import { serviceHierarchy, serviceHistory, services } from "@/db/schema";
 import { eq } from 'drizzle-orm';
 import { redirect } from 'next/navigation';
+import { AuthenticateAPI } from './Account';
 
 /*
     The function attempts to get the services that are active
@@ -34,61 +35,70 @@ export async function getServices() {
     based on parameters and ID.
 */
 export async function editService(params: FormData) {
-    const id = params.get('id');
-    // Check if null or undefined and redirect
-    if (id === undefined) {
-        return redirect('/service/edit?id=null')
-    }
-    // Obtain service info
+    const auth = await AuthenticateAPI();
     // @ts-ignore
-    const serviceInfo = await (await db).select().from(services).where(eq(services.id, id))
-    // If length is 0, redirect or else up
-    if (serviceInfo.length == 0) {
-        return redirect('/service/edit?id=null')
+    if (auth.valid && (auth.user.role != 'user')) {
+        const id = params.get('id');
+        // Check if null or undefined and redirect
+        if (id === undefined) {
+            return redirect('/service/edit?id=null')
+        }
+        // Obtain service info
+        // @ts-ignore
+        const serviceInfo = await (await db).select().from(services).where(eq(services.id, id))
+        // If length is 0, redirect or else up
+        if (serviceInfo.length == 0) {
+            return redirect('/service/edit?id=null')
+        }
+        // Update the service parameters based on ID.
+        await (await db).update(services).set({
+            // @ts-ignore
+            'name': params.get('service_name'),
+            // @ts-ignore
+            'heartbeatInterval': params.get('heartbeat_interval'),
+            // @ts-ignore
+            'maxRetries': params.get('retries'),
+            // @ts-ignore
+            'monitorType': params.get('monitor_type'),
+            // @ts-ignore
+            'monitorURL': params.get('monitor_url'),
+        // @ts-ignore
+        }).where(eq(services.id, id));
+        // Return and redirect to service page
+        return redirect('/service?id=' + id);
     }
-    // Update the service parameters based on ID.
-    await (await db).update(services).set({
-        // @ts-ignore
-        'name': params.get('service_name'),
-        // @ts-ignore
-        'heartbeatInterval': params.get('heartbeat_interval'),
-        // @ts-ignore
-        'maxRetries': params.get('retries'),
-        // @ts-ignore
-        'monitorType': params.get('monitor_type'),
-        // @ts-ignore
-        'monitorURL': params.get('monitor_url'),
-    // @ts-ignore
-    }).where(eq(services.id, id));
-    // Return and redirect to service page
-    return redirect('/service?id=' + id);
+    return {status: "fail"};
 }
 
 /*
     The function deletes the service based on the provided ID
 */
 export async function deleteService(params: FormData) {
-    const id = params.get('id');
-    // Check if null or undefined and redirect
-    if (id === undefined) {
-        return redirect('/service/edit?id=null')
+    const auth = await AuthenticateAPI();
+    // @ts-ignore
+    if (auth.valid && (auth.user.role != 'user')) {
+        const id = params.get('id');
+        // Check if null or undefined and redirect
+        if (id === undefined) {
+            return redirect('/service/edit?id=null')
+        }
+        // Obtain service info
+        // @ts-ignore
+        const serviceInfo = await (await db).select().from(services).where(eq(services.id, id))
+        // If length is 0, redirect or else delete service
+        if (serviceInfo.length == 0) {
+            return redirect('/service/edit?id=null')
+        }
+        // Delete the service based on ID
+        // @ts-ignore
+        await (await db).delete(services).where(eq(services.id, id));
+        // Wipe information from service history
+        // @ts-ignore
+        await (await db).delete(serviceHistory).where(eq(serviceHistory.serviceID, id));
+        // Wipe information from service hierarchy
+        // @ts-ignore
+        await (await db).delete(serviceHierarchy).where(eq(serviceHierarchy.serviceID, id));
     }
-    // Obtain service info
-    // @ts-ignore
-    const serviceInfo = await (await db).select().from(services).where(eq(services.id, id))
-    // If length is 0, redirect or else delete service
-    if (serviceInfo.length == 0) {
-        return redirect('/service/edit?id=null')
-    }
-    // Delete the service based on ID
-    // @ts-ignore
-    await (await db).delete(services).where(eq(services.id, id));
-    // Wipe information from service history
-    // @ts-ignore
-    await (await db).delete(serviceHistory).where(eq(serviceHistory.serviceID, id));
-    // Wipe information from service hierarchy
-    // @ts-ignore
-    await (await db).delete(serviceHierarchy).where(eq(serviceHierarchy.serviceID, id));
     // Return and redirect to dashboard
     return redirect('/dashboard');
 }
