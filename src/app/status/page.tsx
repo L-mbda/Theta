@@ -120,10 +120,14 @@ export default async function Settings() {
                             <h2 className="font-bold text-[27px]">Services on Status Page</h2>
                             <p>Drag and Drop to reorder services.</p>
                         </div>
-                        <div className="bg-gray-900 w-[90%] rounded-md p-3">
-                            {/* @ts-ignore */}
-                            <DragDropServices services={hierarchyArray} />
-                        </div>
+                        {
+                        hierarchyArray.length != 0 ? (
+                            <div className="bg-gray-900 w-[90%] rounded-md p-3">
+                                {/* @ts-ignore */}
+                                <DragDropServices services={hierarchyArray} />
+                            </div>                
+                        ) : (<p>No services were created. Please create one before continuing.</p>)
+                        }
                     </div>
                 </div>
                 {/* Footer */}

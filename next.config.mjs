@@ -6,7 +6,6 @@ const nextConfig = {
     },
     experimental: {
         serverActions: {
-            // Make it to work in codespace
             allowedOrigins: ['localhost:3000'],
         }
     }
