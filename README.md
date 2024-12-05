@@ -1,5 +1,5 @@
 # Theta
-*A status manager and monitor, for everyone.*
+*A cute status manager and monitor.*
 
 ## Features
 * 🛹 Easy-to-use Platform designed from Scratch
@@ -66,7 +66,7 @@ To ensure your instance doesn't raise errors, visit the [NextJS Configuration Fi
 
 - Access the application at `http://localhost:3000` and connect it to the internet through your normal methods (NGINX, Apache)\*.
 
-*\* Remember to configure the allowed origins before utilizing the instance.*
+*\* Remember to configure allowed origins before utilizing the instance.*
 
 ## License
 
