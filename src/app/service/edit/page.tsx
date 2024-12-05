@@ -78,6 +78,7 @@ export default async function ServicePage({params, searchParams}: any) {
                     <div className="flex flex-row gap-10">
                         {/* Service inputs */}
                         {/* Send to action */}
+                        {/* @ts-ignore */}
                         <form className="w-[50%]" action={editService}>
                             {/* Edit service component */}
                             <EditServiceComponent serviceComponent={service} />
