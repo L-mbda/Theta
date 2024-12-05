@@ -7,6 +7,7 @@ import { eq } from 'drizzle-orm';
 import { GenerateServiceGraph } from '@/platform/components/GenerateServiceGraph';
 import { ServiceCheck } from '@/platform/components/ServiceCheck';
 import Link from 'next/link';
+import { AuthenticateAPI } from '@/platform/Account';
 
 export default async function Home() {
   // Initialize database and check if there are any users, if there aren't, then display a signup form by redirecting to `/theta` route.
@@ -58,21 +59,34 @@ export default async function Home() {
        // @ts-ignore
        hierarchyArray[i] = hierarchyArray[i].service;
    }
+   const authenticationInfo = await AuthenticateAPI();
   return (
     <main className='flex flex-col items-center gap-4 pb-5'>
       {/* Mobile Friendly 😁 */}
       {/* Header */}
-      <div className='flex justify-center items-center'>
+      <div className='flex flex-col justify-center items-center'>
         <h1 className='font-extralight text-[40px]'>{managerName}</h1>
-        
+        {/* Button to head back to dashboard */}
+        {
+          authenticationInfo.valid ? (
+            <>
+            <br />
+            <div className='flex flex-row gap-2'>
+              <Button component={Link} color='cyan' href={'/status'}>Back to Status Page in Dashboard</Button>
+              <Button component={Link} color='grape' href={'/dashboard'}>Back to Dashboard</Button>
+            </div>
+            </>
+          ) : null
+        }        
       </div>
       <div className='min-h-[80vh]'>
         {/* Incidents */}
         <div className='w-full flex flex-col items-center justify-center'>
             {
                 incidentGroup.length > 0 ? (
-                    <div className='w-[80%] flex flex-col gap-3'>
-                        <h1 className='font-extrabold text-[30px]'>Incidents</h1>
+                  <>
+                      <h1 className='font-extrabold text-[30px]'>Incidents</h1>
+                    <div className='min-w-[40vw] flex flex-col gap-3'>
                         {
                             incidentGroup.map((incident, index) => (
                                 <div key={index} className="flex flex-col min-h-[15vh] p-2 rounded-lg bg-gray-900 gap-3 mb-4 pl-5">
@@ -86,6 +100,7 @@ export default async function Home() {
                             ))
                         }
                     </div>
+                  </>
                 ) : null
             }
         </div>
