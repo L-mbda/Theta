@@ -246,6 +246,38 @@ export async function createUserAccount(data: FormData) {
 }
 
 /*
+    Function to edit a user account
+*/
+export async function editUserAccount(data: FormData) {
+    const userAccount = await AuthenticateAPI();
+    // Check data
+    const [fullName, username, roleselect, accountID] = [await data.get("name"), await data.get("username"), await data.get('role'),data.get('user_id')]
+    // @ts-ignore
+    const targetAccount = await (await db).select().from(user).where(eq(user.id, accountID));
+
+    // Check if account username doesnt exist and continue and check proper authentication
+    // @ts-ignore
+    if (targetAccount.length != 0 && (await (await db).select().from(user).where(eq(user.username, username))).length == 0 && userAccount.valid && (userAccount).user.role != 'user'
+    &&
+    // Check is user role is higher than target role
+    // @ts-ignore
+    (userAccount.user.role == 'admin' ? 1 : (userAccount.user.role == 'owner') ? 2 : 0) > (targetAccount[0].role == 'admin' ? 1 : targetAccount[0].role == 'owner' ? 2 : 0)) {
+        await db.update(user).set({
+            // @ts-ignore
+            'name': fullName,
+            // Get Role and place
+            // @ts-expect-error because it would error out since its a role and username
+            'role': roleselect,
+            // @ts-expect-error because it would error out since its a role and username
+            'username': username,
+        // @ts-expect-error since its checking for equal comparison and possibly not existing
+        }).where(eq(user.id, accountID));
+    }
+    // Return redirect to settings
+    return redirect('/settings');
+}
+
+/*
     Function to delete user account
 */
 export async function deleteUserAccount(data: FormData) {

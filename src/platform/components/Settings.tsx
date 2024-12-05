@@ -9,7 +9,7 @@ import "@/styles/StatusButtons.css";
 import { Button, Modal, NativeSelect, PasswordInput, Table, Textarea, TextInput } from "@mantine/core";
 import { useDisclosure } from '@mantine/hooks';
 import { Edit, Edit2, Trash, Trash2, UserPen, UserPlus } from "lucide-react";
-import { createUserAccount, deleteUserAccount } from "../Account";
+import { createUserAccount, deleteUserAccount, editUserAccount } from "../Account";
 import { SyntheticEvent, useState } from "react";
 
 // For managing users, create an interface
@@ -51,7 +51,7 @@ export function CreateAccount({userRole}: {userRole: string | null}) {
                         required
                         />
                         {/* Select type */}
-                        <NativeSelect name="role" defaultValue={'user'} label="Account Type" description="Type of account being created with different given permissions." data={(userRole == 'owner') ? ['user', 'admin'] : ['user']} required />
+                        <NativeSelect name="role" radius={'lg'} defaultValue={'user'} label="Account Type" description="Type of account being created with different given permissions." data={(userRole == 'owner') ? ['user', 'admin'] : ['user']} required />
                         {/* Button to Submit */}
                         <Button type="submit" radius={'lg'} color="indigo">Create Account</Button>
                     </form>
@@ -64,9 +64,49 @@ export function CreateAccount({userRole}: {userRole: string | null}) {
 }
 
 /*
+    Component for the create account button under the user access section
+*/
+export function EditAccount({targetUser, userRole}: {targetUser: user, userRole: string | null}) {
+    const [opened, {open, close}] = useDisclosure(false);
+    return (
+        <>
+            {/* Modal */}
+            <Modal color="dark" opened={opened}
+            onClose={close} title={(<span className="flex flex-row justify-center items-center gap-3">
+                <UserPen />
+                <p className="font-bold text-[17.5px]">Edit Account</p>
+            </span>)} centered>
+                {/* Body for Modal */}
+                <Modal.Body>
+                    <form className="flex flex-col gap-4" action={editUserAccount}>
+                        {/* Target ID */}
+                        <TextInput name="user_id" className="hidden" defaultValue={targetUser.id} readOnly={true}/>
+                        {/* User Name */}
+                        <TextInput name="name" label="Name" defaultValue={targetUser.name} placeholder="Gon Freecss" radius={'lg'}
+                        description="The name of the user account."
+                        required/>
+                        {/* Username input */}
+                        <TextInput name="username" defaultValue={targetUser.username} label="Username" placeholder="gfreecss" radius={'lg'}
+                        description="The username of the user account (needs to be unique)."
+                        required
+                        />
+                        {/* Select type */}
+                        <NativeSelect name="role" defaultValue={targetUser.role} radius={'lg'} label="Account Type" description="Type of account being with different given permissions." data={(userRole == 'owner') ? ['user', 'admin'] : ['user']} required />
+                        {/* Button to Submit */}
+                        <Button type="submit" radius={'lg'} color="indigo">Edit Account</Button>
+                    </form>
+                </Modal.Body>
+            </Modal>
+            {/* Button to create an incident to open a modal */}
+            <Button onClick={open} leftSection={(<UserPen />)}>Edit Account</Button>
+        </>
+    )
+}
+
+/*
     Component for the delete account button under the user access section
 */
-export function DeleteAccount({userRole, targetUser}: {userRole: string | null, targetUser: user}) {
+export function DeleteAccount({targetUser}: {targetUser: user}) {
     const [opened, {open, close}] = useDisclosure(false);
     return (
         <>
@@ -109,11 +149,14 @@ export function ManageAccount({userIdentity, role}: {userIdentity: user, role: s
                 {/* Body for Modal */}
                 <Modal.Body>
                     <form className="flex flex-col gap-4">
-                        <h1>This is the menu for managing {userIdentity.name}&apos;s account.</h1>
+                        <h1>This is the menu for managing {userIdentity.name}&apos;s account. Nothing may be displayed, depending on your permissions.</h1>
                         {
                             ((role == 'admin' ? 1 : (role == 'owner') ? 2 : 0) > (userIdentity.role == 'admin' ? 1 : userIdentity.role == 'owner' ? 2 : 0)) ?
                             (
-                                <DeleteAccount userRole={role} targetUser={userIdentity} />
+                                <>
+                                    <EditAccount userRole={role} targetUser={userIdentity} />
+                                    <DeleteAccount targetUser={userIdentity} />
+                                </>
                             ) : null
                         }
                     </form>
