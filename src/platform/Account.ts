@@ -147,6 +147,7 @@ export async function AuthenticateServer() {
                 'username': user.username,
                 'role': user.role,
                 'name': user.name,
+                'id': user.id,
             // @ts-expect-error since it is a file that needs it because of the eq() operator.
             }).from(user).where(eq(user.id, cooken.payload?.id))
             if (userAccount.length == 0) {
@@ -180,6 +181,7 @@ export async function AuthenticateAPI() {
                 'username': user.username,
                 'role': user.role,
                 'name': user.name,
+                'id': user.id,
             // @ts-expect-error since it is a file that needs it because of the eq() operator.
             }).from(user).where(eq(user.id, cooken.payload?.id))
             if (userAccount.length == 0) {
@@ -255,9 +257,9 @@ export async function editUserAccount(data: FormData) {
     // @ts-ignore
     const targetAccount = await (await db).select().from(user).where(eq(user.id, accountID));
 
-    // Check if account username doesnt exist and continue and check proper authentication
+    // Check if account username doesnt exist or if it is part of same ID and continue and check proper authentication
     // @ts-ignore
-    if (targetAccount.length != 0 && (await (await db).select().from(user).where(eq(user.username, username))).length == 0 && userAccount.valid && (userAccount).user.role != 'user'
+    if (targetAccount.length != 0 && (((await (await db).select().from(user).where(eq(user.username, username))).length == 0) || ((await (await db).select().from(user).where(eq(user.username, username)))[0].id == targetAccount[0].id)) && userAccount.valid && (userAccount).user.role != 'user'
     &&
     // Check is user role is higher than target role
     // @ts-ignore
@@ -267,7 +269,7 @@ export async function editUserAccount(data: FormData) {
             'name': fullName,
             // Get Role and place
             // @ts-expect-error because it would error out since its a role and username
-            'role': roleselect,
+            'role': roleselect, 
             // @ts-expect-error because it would error out since its a role and username
             'username': username,
         // @ts-expect-error since its checking for equal comparison and possibly not existing
@@ -276,6 +278,80 @@ export async function editUserAccount(data: FormData) {
     // Return redirect to settings
     return redirect('/settings');
 }
+
+/*
+    Function to reset password of a user account
+*/
+export async function resetUserPassword(data: FormData) {
+    const userAccount = await AuthenticateAPI();
+    // Check data
+    const [password, accountID] = [await data.get('password'),data.get('user_id')]
+    // @ts-ignore
+    const targetAccount = await (await db).select().from(user).where(eq(user.id, accountID));
+    // Account salts and more
+    const hashedPassword = await crypto.createHash("sha3-256").update(password + "").digest("hex");
+    // Create the salting variables
+    const salt1 = crypto.randomBytes(256).toString('hex');
+    const salt2 = crypto.randomBytes(256).toString('hex');
+    // Check if account username doesnt exist or if it is part of same ID and continue and check proper authentication
+    // @ts-ignore
+    if (targetAccount.length != 0 && userAccount.valid && (userAccount).user.role != 'user'
+    &&
+    // Check is user role is higher than target role or if ID is equal to user ID
+    // @ts-ignore
+    ((userAccount.user.role == 'admin' ? 1 : (userAccount.user.role == 'owner') ? 2 : 0) > (targetAccount[0].role == 'admin' ? 1 : targetAccount[0].role == 'owner' ? 2 : 0)) || targetAccount[0].id == (userAccount).user.id) {
+        await db.update(user).set({
+            // @ts-ignore
+            'password': crypto.createHash("sha3-512").update(salt1 + hashedPassword + salt2).digest("hex"),
+            'salt1': salt1,
+            'salt2': salt2,
+        // @ts-expect-error since its checking for equal comparison and possibly not existing
+        }).where(eq(user.id, accountID));
+    }
+    // Return redirect to settings
+    return redirect('/settings');
+}
+
+/*
+    Function to change the user password
+*/
+export async function changeUserPassword(data: FormData) {
+    const userAccount = await AuthenticateAPI();
+    // Check data
+    const [oldPassword, newPassword, confirmNewPassword] = [await crypto.createHash("sha3-256").update((await data.get('old_password')) + "").digest('hex'),data.get('new_password'),data.get('new_password_confirm')]
+    if (newPassword != confirmNewPassword) {
+        return redirect('/settings');
+    }
+    // @ts-ignore
+    const targetAccount = await (await db).select().from(user).where(eq(user.id, userAccount.user.id));
+    // For old pass
+    // @ts-ignore
+    const oldSaltedPassword = await crypto.createHash("sha3-512").update(targetAccount[0].salt1 + oldPassword + targetAccount[0].salt2).digest("hex");
+    // Check if authentication is not valid or if old password is not equal to the target account password
+    if (userAccount.valid != true || oldSaltedPassword != targetAccount[0].password) {
+        return redirect('/settings');
+    }
+    // Else, continue
+    // Account salts and more
+    const hashedPassword = await crypto.createHash("sha3-256").update(newPassword + "").digest("hex");
+    // Create the salting variables
+    const salt1 = crypto.randomBytes(256).toString('hex');
+    const salt2 = crypto.randomBytes(256).toString('hex');
+    // Check length and proper authentication proceedures to ensure that the user is valid
+    // @ts-ignore
+    if (targetAccount.length != 0 && userAccount.valid && (userAccount).user.id == targetAccount[0].id) {
+        await db.update(user).set({
+            // @ts-ignore
+            'password': crypto.createHash("sha3-512").update(salt1 + hashedPassword + salt2).digest("hex"),
+            'salt1': salt1,
+            'salt2': salt2,
+        // @ts-expect-error since its checking for equal comparison and possibly not existing
+        }).where(eq(user.id, userAccount.user.id));
+    }
+    // Return redirect to logout
+    return redirect('/logout');
+}
+
 
 /*
     Function to delete user account

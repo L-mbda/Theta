@@ -66,50 +66,52 @@ export default async function Home() {
         <h1 className='font-extralight text-[40px]'>{managerName}</h1>
         
       </div>
-      {/* Incidents */}
-      <div className='w-full flex flex-col items-center justify-center'>
-          {
-              incidentGroup.length > 0 ? (
-                  <div className='w-[80%] flex flex-col gap-3'>
-                      <h1 className='font-extrabold text-[30px]'>Incidents</h1>
-                      {
-                          incidentGroup.map((incident, index) => (
-                              <div key={index} className="flex flex-col min-h-[15vh] p-2 rounded-lg bg-gray-900 gap-3 mb-4 pl-5">
-                                  <p className="flex-1 font-extrabold text-[23px]">{incident.name}</p>
-                                  <p className="flex-1 text-[15px]">{incident.description}</p>
-                                  <div>
-                                      <p className="flex-1 text-[12px] text-gray-500">First Created: {new Date(parseInt(incident.firstCreated)).toLocaleString()}</p>
-                                      <p className="flex-1 text-[12px] text-gray-500">Last Updated: {new Date(parseInt(incident.lastUpdated)).toLocaleString()}</p>
-                                  </div>
-                              </div>
-                          ))
-                      }
-                  </div>
-              ) : null
-          }
-      </div>
-      {/* Services */}
-      <div className='w-full flex flex-col items-center'>
-          <h1 className='font-extrabold text-[30px]'>Services</h1>
-          {/* Ternary operator ton state that no services were made. */}
-          {
-            hierarchyArray.length == 0 ? (<h1>No services available.</h1>) : (<>
-          <div className='flex flex-col gap-4 w-[80%]'>
-              {
-                  hierarchyArray.map((service, index) => (
-                    <div key={index} className='flex flex-col gap-4'>
-                      <div>
-                        {/* @ts-ignore */}
-                        <h1 className='font-bold text-[25px]'>{service.name}</h1>
-                        <p>Current Status: <ServiceCheck id={service.id} /></p>
-                        <p>Service History</p>
-                      </div>
-                      <GenerateServiceGraph id={service.id} />
+      <div className='min-h-[80vh]'>
+        {/* Incidents */}
+        <div className='w-full flex flex-col items-center justify-center'>
+            {
+                incidentGroup.length > 0 ? (
+                    <div className='w-[80%] flex flex-col gap-3'>
+                        <h1 className='font-extrabold text-[30px]'>Incidents</h1>
+                        {
+                            incidentGroup.map((incident, index) => (
+                                <div key={index} className="flex flex-col min-h-[15vh] p-2 rounded-lg bg-gray-900 gap-3 mb-4 pl-5">
+                                    <p className="flex-1 font-extrabold text-[23px]">{incident.name}</p>
+                                    <p className="flex-1 text-[15px]">{incident.description}</p>
+                                    <div>
+                                        <p className="flex-1 text-[12px] text-gray-500">First Created: {new Date(parseInt(incident.firstCreated)).toLocaleString()}</p>
+                                        <p className="flex-1 text-[12px] text-gray-500">Last Updated: {new Date(parseInt(incident.lastUpdated)).toLocaleString()}</p>
+                                    </div>
+                                </div>
+                            ))
+                        }
                     </div>
-                  ))
-              }
-          </div>
-          </>) }
+                ) : null
+            }
+        </div>
+        {/* Services */}
+        <div className='w-full flex flex-col items-center'>
+            <h1 className='font-extrabold text-[30px]'>Services</h1>
+            {/* Ternary operator ton state that no services were made. */}
+            {
+              hierarchyArray.length == 0 ? (<h1>No services available.</h1>) : (<>
+            <div className='flex flex-col gap-4 w-[80%]'>
+                {
+                    hierarchyArray.map((service, index) => (
+                      <div key={index} className='flex flex-col gap-4'>
+                        <div>
+                          {/* @ts-ignore */}
+                          <h1 className='font-bold text-[25px]'>{service.name}</h1>
+                          <p>Current Status: <ServiceCheck id={service.id} /></p>
+                          <p>Service History</p>
+                        </div>
+                        <GenerateServiceGraph id={service.id} />
+                      </div>
+                    ))
+                }
+            </div>
+            </>) }
+        </div>
       </div>
       {/* Footer */}
       <div className='flex flex-col justify-center items-center gap-2'>

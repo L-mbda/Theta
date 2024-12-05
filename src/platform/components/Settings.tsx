@@ -8,8 +8,8 @@
 import "@/styles/StatusButtons.css";
 import { Button, Modal, NativeSelect, PasswordInput, Table, Textarea, TextInput } from "@mantine/core";
 import { useDisclosure } from '@mantine/hooks';
-import { Edit, Edit2, Trash, Trash2, UserPen, UserPlus } from "lucide-react";
-import { createUserAccount, deleteUserAccount, editUserAccount } from "../Account";
+import { Edit, Edit2, Key, Trash, Trash2, UserPen, UserPlus, X } from "lucide-react";
+import { changeUserPassword, createUserAccount, deleteUserAccount, editUserAccount, resetUserPassword } from "../Account";
 import { SyntheticEvent, useState } from "react";
 
 // For managing users, create an interface
@@ -104,6 +104,101 @@ export function EditAccount({targetUser, userRole}: {targetUser: user, userRole:
 }
 
 /*
+    Component for the reset account button under the user access section
+*/
+export function ResetPassword({targetUser}: {targetUser: user}) {
+    const [opened, {open, close}] = useDisclosure(false);
+    return (
+        <>
+            {/* Modal */}
+            <Modal color="dark" opened={opened}
+            onClose={close} title={(<span className="flex flex-row justify-center items-center gap-3">
+                <Key />
+                <p className="font-bold text-[17.5px]">Reset Password</p>
+            </span>)} centered>
+                {/* Body for Modal */}
+                <Modal.Body>
+                    <form className="flex flex-col gap-4" action={resetUserPassword}>
+                        {/* Target ID */}
+                        <TextInput name="user_id" className="hidden" defaultValue={targetUser.id} readOnly={true}/>
+                        {/* User Name */}
+                        <PasswordInput name="password" label="Password" defaultValue={targetUser.name} placeholder="*****" radius={'lg'}
+                        description="The new password for the user account."
+                        required/>
+                        {/* Button to Submit */}
+                        <Button type="submit" radius={'lg'} color="indigo">Reset</Button>
+                    </form>
+                </Modal.Body>
+            </Modal>
+            {/* Button to create an incident to open a modal */}
+            <Button onClick={open} color="violet" leftSection={(<Key />)}>Reset Password</Button>
+        </>
+    )
+}
+
+/*
+    Component for the change password button under the information section
+*/
+export function ChangePassword({targetUser}: {targetUser: user}) {
+    const [opened, {open, close}] = useDisclosure(false);
+    const [disableState, setDisabledState] = useState(true);
+    const [submitType, setSubmitType] = useState('button');
+    return (
+        <>
+            {/* Modal */}
+            <Modal color="dark" opened={opened}
+            onClose={close} title={(<span className="flex flex-row justify-center items-center gap-3">
+                <Key />
+                <p className="font-bold text-[17.5px]">Reset Password</p>
+            </span>)} centered>
+                {/* Body for Modal */}
+                <Modal.Body>
+                    <form className="flex flex-col gap-4" action={changeUserPassword}>
+                        {/* Password */}
+                        <PasswordInput name="old_password" label="Old Password" defaultValue={targetUser.name} placeholder="*****" radius={'lg'}
+                        description="The old password for the user account."
+                        required/>
+                        {/* Password */}
+                        <PasswordInput name="new_password" label="New Password" defaultValue={targetUser.name} placeholder="*****" radius={'lg'}
+                        description="The new password for this user account."
+                        onChange={(event) => {
+                        // Check if same and enable button
+                        // @ts-ignore
+                        if (event.target.value == document.getElementsByName('new_password_confirm')[0].value) {
+                            setDisabledState(false)
+                            setSubmitType('submit');
+                        } else {
+                            setDisabledState(true)
+                            setSubmitType('button');                     
+                        }}}
+                        required/>
+                        {/* Password */}
+                        <PasswordInput name="new_password_confirm" label="Confirm New Password" defaultValue={targetUser.name} placeholder="*****" radius={'lg'}
+                        onChange={(event) => {
+                        // Check if same and enable button
+                        // @ts-ignore
+                        if (event.target.value == document.getElementsByName('new_password')[0].value) {
+                            setDisabledState(false)
+                            setSubmitType('submit')
+                        } else {
+                            setDisabledState(true)
+                            setSubmitType('button')
+                        }}}
+                        description="Confirm your new password for this user account."
+                        required/>
+                        {/* Button to Submit */}
+                        {/* @ts-ignore */}
+                        <Button type={submitType} id="submit_button_change" radius={'lg'} color="indigo" disabled={disableState}>Change Password</Button>
+                    </form>
+                </Modal.Body>
+            </Modal>
+            {/* Button to create an incident to open a modal */}
+            <Button onClick={open} radius={'md'} color="violet" leftSection={(<Key />)}>Change Password</Button>
+        </>
+    )
+}
+
+/*
     Component for the delete account button under the user access section
 */
 export function DeleteAccount({targetUser}: {targetUser: user}) {
@@ -132,7 +227,6 @@ export function DeleteAccount({targetUser}: {targetUser: user}) {
     )
 }
 
-
 /*
     Management button
 */
@@ -155,6 +249,7 @@ export function ManageAccount({userIdentity, role}: {userIdentity: user, role: s
                             (
                                 <>
                                     <EditAccount userRole={role} targetUser={userIdentity} />
+                                    <ResetPassword targetUser={userIdentity} />
                                     <DeleteAccount targetUser={userIdentity} />
                                 </>
                             ) : null
@@ -206,7 +301,7 @@ export function UserTable({users, permissions}: {users: any,permissions:any}) {
                         <Table.Th>Name</Table.Th>
                         <Table.Th>Username</Table.Th>
                         <Table.Th>Role</Table.Th>
-                        <Table.Th>Management</Table.Th>
+                        <Table.Th>Manage</Table.Th>
                     </Table.Tr>
                 </Table.Thead>
                 {/* Body */}
@@ -217,7 +312,14 @@ export function UserTable({users, permissions}: {users: any,permissions:any}) {
                                 <Table.Td>{user.name}</Table.Td>
                                 <Table.Td>{user.username}</Table.Td>
                                 <Table.Td>{user.role}</Table.Td>
-                                <Table.Td><ManageAccount userIdentity={user} role={permissions} /></Table.Td>
+                                {
+                                    ((permissions == 'admin' ? 1 : (permissions == 'owner') ? 2 : 0) > (user.role == 'admin' ? 1 : user.role == 'owner' ? 2 : 0)) ?
+                                    (
+                                    <Table.Td><ManageAccount userIdentity={user} role={permissions} /></Table.Td>
+                                    ) : (
+                                        <Table.Td><X /></Table.Td>
+                                    )
+                                }
                             </Table.Tr>
                         ))
                     }

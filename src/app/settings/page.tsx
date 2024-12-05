@@ -1,11 +1,11 @@
 import { db } from "@/db/db";
 import { manager, user } from "@/db/schema";
 import { AuthenticateServer } from "@/platform/Account";
-import { CreateAccount, UserTable } from "@/platform/components/Settings";
+import { ChangePassword, CreateAccount, ResetPassword, UserTable } from "@/platform/components/Settings";
 import { changeStatusPageName } from "@/platform/Manager";
 import { Button, TextInput } from "@mantine/core";
 import { eq } from "drizzle-orm";
-import { IdCard, LayoutDashboard, RectangleVertical, User, UserCircle } from "lucide-react";
+import { Book, IdCard, LayoutDashboard, LogOut, RectangleVertical, User, UserCircle } from "lucide-react";
 import Link from "next/link";
 
 // default exports
@@ -43,11 +43,16 @@ export default async function Settings() {
                     <div className="flex flex-col gap-3 w-[90%]"> 
                         <h2 className="font-light text-[25px] flex flex-row items-center gap-2"><RectangleVertical /> Information</h2>
                         {/* Instance Name and stuff (info) */}
-                        <div className="">
-                            <h2 className="text-[20px] flex flex-row items-center gap-2 font-semibold"><IdCard size={25} /> {managerInfo.name}</h2>
-                            <p className="flex flex-row items-center gap-2 font-semibold text-[20px]"><User /> {(await (await db).select().from(user).where(eq(user.role, "owner")))[0].name}</p>
+                        <div className="flex flex-col gap-3 w-[75%]">
+                            <div>
+                                <h2 className="text-[20px] flex flex-row items-center gap-2 font-semibold"><IdCard size={25} /> {managerInfo.name}</h2>
+                                <p className="flex flex-row items-center gap-2 font-semibold text-[20px]"><User /> {(await (await db).select().from(user).where(eq(user.role, "owner")))[0].name}</p>
+                            </div>
+                            {/* @ts-ignore */}
+                            <ChangePassword targetUser={(userInfo)} />
                         </div>
                     </div>
+                    <br />
                     {/* Div for editing title */}
                     <div className="flex flex-col gap-3 w-[90%]"> 
                         <h2 className="font-light text-[25px] flex flex-row items-center gap-2"><LayoutDashboard /> Status Page Information</h2>
@@ -58,6 +63,7 @@ export default async function Settings() {
                             <Button className="width-[50%]" type="submit" radius={'lg'}>Change Name</Button>
                         </form>
                     </div>
+                    <br />
                     {/* User creation and deletion system */}
                     {
                         userInfo.role != "user" ? (<>
@@ -74,6 +80,11 @@ export default async function Settings() {
                             }).from(user))} permissions={userInfo.role} />                            
                         </>): null
                     }
+                <br />
+                <div className="flex flex-col gap-3 w-[60%]"> 
+                    <h2 className="font-light text-[25px] flex flex-row items-center gap-2"><Book /> Account</h2>
+                    <Button radius={'md'} color="teal" component={Link} href={'/logout'} leftSection={(<LogOut />)}>Logout</Button>
+                </div>
                 </div>
                 <footer className="flex pb-3 bottom-3 gap-4 items-center w-full invisible md:visible justify-center">
                     <p>Theta v1 Enterprise</p>

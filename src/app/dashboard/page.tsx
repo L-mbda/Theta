@@ -106,7 +106,7 @@ export default function DashboardPage() {
                     </div>
 
                     {/* Body for our content */}
-                    <div className="flex flex-col p-10 gap-3">
+                    <div className="flex flex-col p-10 gap-3 min-h-[80vh]">
                         {/* For our welcome header */}
                         <div>
                             {/* @ts-ignore */}
@@ -122,7 +122,7 @@ export default function DashboardPage() {
                                 // @ts-ignore
                                 (user.role == 'owner' || user.role == "admin") ? 
                                 (
-                                    <Button className="max-w-[20%]" component={Link} href={'/create/service'}>
+                                    <Button className="max-w-[40%]" component={Link} href={'/create/service'}>
                                         {/* For controlling spacing and centering of 
                                             the icon and text
                                         */}
@@ -132,6 +132,7 @@ export default function DashboardPage() {
                                     </Button>
                                 ) : (null)
                             }
+                            <br />
                             {/* Create question if service exists */}
                             {/* <div className="grid pt-2"> */}
                             <div className="grid grid-cols-1 lg:grid-cols-3 gap-4">
@@ -140,7 +141,7 @@ export default function DashboardPage() {
                                     // @ts-ignore
                                     serviceState == null ? (
                                         // Rendering for if null
-                                        <div className="min-h-[50px] lg:w-[30%] w-[75%] bg-gray-800 rounded-md flex flex-col p-5 items-center justify-center gap-4">
+                                        <div className="min-h-[75px] lg:w-[80%] w-[75%] bg-gray-800 rounded-md flex flex-col p-5 items-center justify-center gap-4">
                                             <h1 className="font-semibold flex gap-2 justify-center items-center"><CircleAlert /> No services available.</h1>
                                             <p>No services have been created to be able to obtain the monitoring status of. Otherwise, they would be displayed here. Why not create a service?</p>
                                         </div>
