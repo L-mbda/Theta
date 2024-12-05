@@ -7,7 +7,7 @@ const nextConfig = {
     experimental: {
         serverActions: {
             // Make it to work in codespace
-            allowedOrigins: ['*.app.github.dev','localhost:3000'],
+            allowedOrigins: ['localhost:3000'],
         }
     }
 };

@@ -1,36 +1,73 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+# Theta
+*A status manager and monitor, for everyone.*
 
-## Getting Started
+## Features
+* 🛹 Easy-to-use Platform designed from Scratch
+* 🔒 Secure, allowing you to focus on monitoring and more.
+* 📊 Real-time status updates
+* 🛠️ Customizable service monitoring
+* 📅 Task scheduling and incident reporting 
+* 👥 Adding users.
 
-First, run the development server:
+## How to set up
 
-```bash
-npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
-```
+### Prerequisites
+- Node.js
+- PostgreSQL
+- Bun
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+### Installation
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
+1. **Clone the repository:**
+    ```sh
+    git clone https://github.com/l-mbda/theta.git
+    cd theta
+    ```
 
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
+2. **Install dependencies:**
+    ```sh
+    npm install
+    ```
 
-## Learn More
+3. **Set up environment variables:**
+    Create a `.env` file in the root directory and add the following:
+    ```env
+    PORT=3000
+    DB_URL="your_postgresql_database_url"
+    JWT_SECRET = "";
+    ```
 
-To learn more about Next.js, take a look at the following resources:
+4. **Run database migrations:**
+    ```sh
+    npm run migrate
+    ```
 
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
+5. **Start the server:**
+    - ***Development:***
+        ```sh
+        bun run dev
+        ```
+    - ***Production:***
+       ```sh
+       bun run app
+       ```
+       
+       or (if you already built app)
 
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
+       ```sh
+       bun run start
+       ```
 
-## Deploy on Vercel
+### Configuring Allowed origins
 
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
+To ensure your instance doesn't eror out, visit the [NextJS Configuration File](/next.config.mjs) and add your URL to the allowedOrigins list on Line 10. This will prevent certain errors as a result of the application utilizing server actions.
 
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+## Usage
+
+- Access the application at `http://localhost:3000` and connect it to the internet through your normal methods (NGINX, Apache)\*.
+
+-# *\* Remember to configure the allowed origins before utilizing the instance.*
+
+## License
+
+This project is licensed under the Mozilla Public License 2.0. See the [LICENSE](LICENSE) file for details.
