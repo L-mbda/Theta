@@ -60,7 +60,7 @@
 
 ### Configuring Allowed origins
 
-To ensure your instance doesn't eror out, visit the [NextJS Configuration File](/next.config.mjs) and add your URL to the allowedOrigins list on Line 10. This will prevent certain errors as a result of the application utilizing server actions.
+To ensure your instance doesn't raise errors, visit the [NextJS Configuration File](/next.config.mjs) and add your URL to the allowedOrigins list on Line 10. This will prevent certain errors as a result of the application utilizing server actions.
 
 ## Usage
 
@@ -70,4 +70,4 @@ To ensure your instance doesn't eror out, visit the [NextJS Configuration File](
 
 ## License
 
-This project is licensed under the Mozilla Public License 2.0. See the [LICENSE](LICENSE) file for details.
+Theta is licensed under the Mozilla Public License 2.0. See the [LICENSE](LICENSE) file for details.
